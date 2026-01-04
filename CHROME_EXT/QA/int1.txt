@@ -1,0 +1,152 @@
+1> What is a Chrome Extension?
+2> Main components of a Chrome Extension?
+3> What is manifest.json?
+4> Difference between Manifest V2 and V3?
+5> What is a Content Script?
+6> Can content scripts access Chrome APIs?
+7> How do content scripts communicate ?
+8> how to communicate between background script to content script?
+9> What is a Service Worker in MV3?
+10> How do you keep state in MV3?
+11> How does message passing work?
+12> What are permissions?
+13> What is host_permissions?
+14> What is activeTab permission?
+15> Types of storage in Chrome extensions?
+16> Difference: localStorage vs chrome.storage?
+17> How long does popup stay open?
+18> Can we use React in Chrome extensions?
+19> How to make API calls in extensions?
+20> How do you handle CORS?
+21> How would you inject a button into every webpage?
+22> How do you notify users from backend?
+23> How to communicate between multiple tabs?
+24> How do you optimize extension performance?
+25> How do you debug Chrome extensions?
+26> Steps to publish extension?
+27> What is Declarative Net Request API?
+28> How do you handle authentication?
+29> How do you update extensions?
+30> How would you design a large-scale Chrome extension with millions of users?
+31> How do you handle state management in MV3 when service workers are killed?
+32> How would you implement cross-tab real-time communication? 
+    ---> chrome.runtime.sendMessage || chrome.tabs.sendMessage
+33> What problems did MV3 solve? 
+    ---> 
+        Memory leaks
+        Persistent background abuse
+        Security vulnerabilities
+34> How Mv3 solve memory leaks ?
+35> What challenges did MV3 introduce?
+    ---->
+        Service worker termination
+        No blocking webRequest
+        Harder debugging
+        No DOM access in background
+
+36> How do you perform long-running tasks in MV3?
+
+37> How do you prevent XSS attacks in content scripts?
+    ---->
+        Never use innerHTML
+        Sanitize inputs
+        Use textContent
+        Use CSP rules
+
+38> How do you secure user data in extensions?
+    ---->
+    Minimal permissions
+    Encrypt sensitive data
+    Store tokens securely
+    Validate backend requests
+
+39> How do you implement OAuth in Chrome Extensions?
+    ---->
+    Use chrome.identity
+    Redirect via extension origin
+    Store tokens in chrome.storage
+
+40> How do you block or modify requests in MV3?
+41> Why is webRequestBlocking removed in MV3?
+42> How do you handle CORS in complex extensions?
+43> How do you inject UI safely into third-party websites?
+    ----->
+    Shadow DOM
+    Scoped CSS
+    Avoid global styles
+44> How do you handle SPA websites like React or Next.js?
+    ---->
+    Use MutationObserver
+    Detect URL changes
+    Re-inject logic dynamically
+
+45> How do you prevent conflicts with website JS?
+    ----->
+    Use IIFE
+    Avoid global variables
+    Shadow DOM
+
+46> How do you reduce extension memory usage?
+    ----->
+    Event-driven listeners
+    Avoid polling
+    Lazy load scripts
+    Remove unused permissions
+
+47> How do you profile extension performance?
+    ----> 
+    Chrome DevTools → Performance tab
+    Service worker inspection
+    Memory snapshot
+
+48> How do you prevent content scripts from slowing down pages?
+    ------>
+    Minimal DOM access
+    Throttling observers
+    Early exits
+
+49> How do you sync user data across devices?
+    ----->
+    chrome.storage.sync
+    Backend user account
+    Conflict resolution logic
+
+50> How do you handle offline mode?
+    ----->
+    Cache data locally
+    Queue requests
+    Retry using alarms API
+
+51> How do you test Chrome extensions?
+    ----->
+    Manual testing
+    Puppeteer + Chrome
+    Mock APIs
+    Canary testing
+
+52> How do you debug service worker crashes?
+    ------>
+    chrome://extensions
+    Inspect service worker
+    Persistent logging
+
+53> Design a screen-recording Chrome extension
+    ----->
+    Tab capture API
+    MediaRecorder
+    Chunk upload
+    Background coordination
+
+54> Design an extension that tracks user activity securely
+    ----->
+    Consent-based tracking
+    Event throttling
+    Backend analytics
+    GDPR compliance
+
+55> Design a price-tracking extension
+    ----->
+    Content script scraping
+    Backend cron jobs
+    Notifications
+    Cache + alerts
