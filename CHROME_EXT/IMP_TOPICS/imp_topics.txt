@@ -1,0 +1,18 @@
+MV3 architecture
+MV2 architecture
+content script
+Messaging
+Apis
+permisssions
+host permissions
+when to use message-passing vs port
+storage and state managment
+oAuth(google,github,custom backend)
+JWT+session
+content security policy (CSP)
+prevent XSS inside extensions
+Avoid eval / inline scripts
+Automation 
+scrapping
+Ethics and Tos awarness
+LLM intregation
