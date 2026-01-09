@@ -1,0 +1,199 @@
+webRequestBlocking was removed in Manifest V3 because it fundamentally conflicted with Chrome’s security, privacy, and performance goals at scale.
+This wasn’t an arbitrary API removal—it was an architectural decision.
+
+Here’s the clear, non-hand-wavy explanation.
+
+1. What webRequestBlocking Actually Did
+
+In MV2, for every network request:
+
+Network Request
+   ↓
+Extension JS runs
+   ↓ (blocking)
+Extension decides allow / block / modify
+   ↓
+Request continues
+
+Problems:
+
+JavaScript ran on the critical path
+
+Browser had to wait for extensions
+
+One slow extension = slow page
+
+One malicious extension = data exfiltration
+
+2. Performance at Chrome Scale
+
+Chrome runs on:
+
+Billions of devices
+
+Low-end hardware
+
+Mobile CPUs
+
+Constrained memory
+
+With webRequestBlocking:
+
+Hundreds of requests per page
+
+JS executed for each
+
+Context switches
+
+Garbage creation
+
+👉 This does not scale.
+
+Even “good” extensions caused:
+
+Page load delays
+
+Battery drain
+
+Jank
+
+3. Security & Privacy Risks
+With blocking webRequest, extensions could:
+
+Read full URLs (including tokens)
+
+Read headers (cookies, auth)
+
+Read POST bodies
+
+Modify responses
+
+This enabled:
+
+Credential harvesting
+
+Session hijacking
+
+Undetectable tracking
+
+Malicious surveillance
+
+All without user visibility.
+
+4. Impossible to Enforce Safety
+
+Because logic ran in JS:
+
+Chrome couldn’t reason about behavior
+
+Couldn’t optimize execution
+
+Couldn’t guarantee determinism
+
+Couldn’t audit intent
+
+Every request was:
+
+“Trust arbitrary JS written by someone else”
+
+That’s a non-starter at browser scale.
+
+5. DeclarativeNetRequest (DNR) Solves This
+
+MV3 replaced imperative code with declarative rules.
+
+Network Request
+   ↓
+Chrome Native Engine
+   ↓
+Rules evaluated (no JS)
+   ↓
+Allow / Block / Redirect
+
+Benefits:
+
+Zero JS per request
+
+Deterministic behavior
+
+Auditable rules
+
+Native performance
+
+Reduced data exposure
+
+Extensions:
+
+Can no longer read request bodies
+
+Cannot dynamically exfiltrate data
+
+Cannot slow down page loads
+
+6. Why Not Keep Both APIs?
+
+Because one bad extension ruins the model.
+
+Chrome cannot:
+
+Partially trust extensions
+
+Predict extension behavior
+
+Kill blocking JS safely mid-request
+
+So Chrome chose:
+
+Predictable, safe, and fast over unlimited power
+
+7. Tradeoffs (Yes, There Are Real Ones)
+Lost capabilities:
+
+❌ Dynamic per-request decisions
+❌ POST body inspection
+❌ Arbitrary JS logic
+❌ Full response modification
+
+Gained capabilities:
+
+✅ Massive performance gains
+✅ Strong privacy guarantees
+✅ Better battery life
+✅ Extension ecosystem safety
+
+8. Why Ad Blockers Still Work
+
+Ad blockers:
+
+Mostly rely on URL patterns
+
+Do not need request bodies
+
+Fit declarative rules well
+
+That’s why uBlock Origin Lite works under MV3.
+
+Heavy dynamic logic → move server-side.
+
+9. Chrome’s Unstated Goal (Reality)
+
+Chrome needed:
+
+To safely support millions of extensions
+
+On billions of devices
+
+Without trusting extension authors
+
+webRequestBlocking violated that premise.
+
+10. TL;DR
+MV2	MV3
+JS blocks requests	Native rules
+Slow & unpredictable	Fast & deterministic
+Full request access	Minimal data exposure
+Hard to audit	Auditable
+Easy to abuse	Much harder to abuse
+
+webRequestBlocking wasn’t removed because it was powerful.
+It was removed because it was too powerful to be safe.

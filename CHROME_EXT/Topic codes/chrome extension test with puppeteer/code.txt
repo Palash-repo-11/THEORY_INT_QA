@@ -1,0 +1,458 @@
+// ============================================
+// FILE: package.json
+// ============================================
+{
+  "name": "puppeteer-chrome-extension-tests",
+  "version": "1.0.0",
+  "description": "Automated testing for Chrome extension using Puppeteer",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:verbose": "jest --verbose"
+  },
+  "keywords": ["chrome-extension", "puppeteer", "testing"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "puppeteer": "^21.6.0",
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testTimeout": 30000,
+    "verbose": true
+  }
+}
+
+// ============================================
+// FILE: extension/manifest.json
+// ============================================
+{
+  "manifest_version": 3,
+  "name": "Test Extension",
+  "version": "1.0.0",
+  "description": "A test Chrome extension for Puppeteer testing",
+  "icons": {
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "background": {
+    "service_worker": "background/service_worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["styles/shadow.css"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "128": "icons/icon128.png"
+    }
+  }
+}
+
+// ============================================
+// FILE: extension/content.js
+// ============================================
+console.log('Content script loaded!');
+
+// Mark the page as injected
+document.body.setAttribute('data-extension-injected', 'true');
+
+// Change background color
+document.body.style.backgroundColor = '#f0f8ff';
+
+// Add a visual indicator
+const indicator = document.createElement('div');
+indicator.id = 'extension-indicator';
+indicator.textContent = 'Extension Active';
+indicator.style.cssText = `
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
+  z-index: 999999;
+  font-size: 14px;
+`;
+document.body.appendChild(indicator);
+
+// Listen for messages from background script
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.type === 'PING') {
+    sendResponse({ status: 'Content script is alive!' });
+  }
+  return true;
+});
+
+// ============================================
+// FILE: extension/background/service_worker.js
+// ============================================
+console.log('Background service worker started!');
+
+// Installation
+chrome.runtime.onInstalled.addListener((details) => {
+  console.log('Extension installed:', details.reason);
+  
+  // Set default storage values
+  chrome.storage.local.set({
+    installDate: new Date().toISOString(),
+    clickCount: 0
+  });
+});
+
+// Message handling
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  console.log('Message received:', request);
+  
+  if (request.type === 'TEST_MESSAGE') {
+    sendResponse({
+      success: true,
+      message: 'Background script received: ' + request.data,
+      timestamp: Date.now()
+    });
+  }
+  
+  if (request.type === 'GET_TAB_INFO') {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      sendResponse({ tab: tabs[0] });
+    });
+    return true; // Keep channel open for async response
+  }
+  
+  return true;
+});
+
+// ============================================
+// FILE: extension/popup/popup.html
+// ============================================
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Extension Popup</title>
+  <style>
+    body {
+      width: 300px;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      font-size: 18px;
+      margin: 0 0 15px 0;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    #message {
+      margin-top: 15px;
+      padding: 10px;
+      background: #e7f3ff;
+      border-radius: 5px;
+      display: none;
+    }
+    #status {
+      font-size: 12px;
+      color: #666;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test Extension</h1>
+  
+  <button id="testButton">Click Me!</button>
+  <button id="checkStorage">Check Storage</button>
+  <button id="sendMessage">Send Message to Background</button>
+  
+  <div id="message"></div>
+  <div id="status"></div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
+
+// ============================================
+// FILE: extension/popup/popup.js
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+  const testButton = document.getElementById('testButton');
+  const checkStorageButton = document.getElementById('checkStorage');
+  const sendMessageButton = document.getElementById('sendMessage');
+  const messageDiv = document.getElementById('message');
+  const statusDiv = document.getElementById('status');
+  
+  // Test button click
+  testButton.addEventListener('click', async () => {
+    messageDiv.style.display = 'block';
+    messageDiv.textContent = 'Button clicked! Extension is working.';
+    
+    // Increment click count
+    const result = await chrome.storage.local.get('clickCount');
+    const newCount = (result.clickCount || 0) + 1;
+    await chrome.storage.local.set({ clickCount: newCount });
+    
+    statusDiv.textContent = `Total clicks: ${newCount}`;
+  });
+  
+  // Check storage button
+  checkStorageButton.addEventListener('click', async () => {
+    const data = await chrome.storage.local.get(null);
+    messageDiv.style.display = 'block';
+    messageDiv.textContent = 'Storage: ' + JSON.stringify(data, null, 2);
+  });
+  
+  // Send message to background
+  sendMessageButton.addEventListener('click', () => {
+    chrome.runtime.sendMessage(
+      { type: 'TEST_MESSAGE', data: 'Hello from popup!' },
+      (response) => {
+        messageDiv.style.display = 'block';
+        messageDiv.textContent = 'Response: ' + JSON.stringify(response);
+      }
+    );
+  });
+  
+  // Load initial status
+  chrome.storage.local.get('clickCount', (result) => {
+    statusDiv.textContent = `Total clicks: ${result.clickCount || 0}`;
+  });
+});
+
+// ============================================
+// FILE: extension/styles/shadow.css
+// ============================================
+/* Shadow styles for content script */
+#extension-indicator {
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+#extension-indicator:hover {
+  transform: scale(1.05);
+}
+
+// ============================================
+// FILE: tests/extension.test.js
+// ============================================
+const puppeteer = require('puppeteer');
+const path = require('path');
+
+const EXTENSION_PATH = path.join(__dirname, '../extension');
+const TEST_TIMEOUT = 30000;
+
+describe('Chrome Extension Tests', () => {
+  let browser;
+  let page;
+  let extensionId;
+
+  beforeAll(async () => {
+    browser = await puppeteer.launch({
+      headless: false,
+      args: [
+        `--disable-extensions-except=${EXTENSION_PATH}`,
+        `--load-extension=${EXTENSION_PATH}`,
+        '--no-sandbox',
+        '--disable-setuid-sandbox'
+      ]
+    });
+
+    const targets = await browser.targets();
+    const extensionTarget = targets.find(t => t.type() === 'service_worker');
+    
+    if (extensionTarget) {
+      extensionId = extensionTarget.url().split('/')[2];
+      console.log('Extension ID:', extensionId);
+    }
+
+    page = await browser.newPage();
+  }, TEST_TIMEOUT);
+
+  afterAll(async () => {
+    if (browser) await browser.close();
+  });
+
+  test('Extension loads successfully', () => {
+    expect(extensionId).toBeDefined();
+  });
+
+  test('Content script injects into page', async () => {
+    await page.goto('https://example.com');
+    await page.waitForTimeout(1000);
+    
+    const hasInjected = await page.evaluate(() => {
+      return document.body.getAttribute('data-extension-injected') === 'true';
+    });
+    
+    expect(hasInjected).toBe(true);
+  }, TEST_TIMEOUT);
+
+  test('Content script changes background color', async () => {
+    await page.goto('https://example.com');
+    await page.waitForTimeout(1000);
+    
+    const bgColor = await page.evaluate(() => {
+      return window.getComputedStyle(document.body).backgroundColor;
+    });
+    
+    expect(bgColor).toBe('rgb(240, 248, 255)');
+  }, TEST_TIMEOUT);
+
+  test('Popup loads successfully', async () => {
+    if (!extensionId) return;
+    
+    await page.goto(`chrome-extension://${extensionId}/popup/popup.html`);
+    const title = await page.title();
+    expect(title).toBe('Extension Popup');
+  }, TEST_TIMEOUT);
+
+  test('Popup button is clickable', async () => {
+    if (!extensionId) return;
+    
+    await page.goto(`chrome-extension://${extensionId}/popup/popup.html`);
+    await page.click('#testButton');
+    await page.waitForSelector('#message', { visible: true });
+    
+    const messageText = await page.$eval('#message', el => el.textContent);
+    expect(messageText).toContain('Button clicked!');
+  }, TEST_TIMEOUT);
+
+  test('Storage works correctly', async () => {
+    await page.goto('https://example.com');
+    
+    await page.evaluate(() => {
+      return new Promise(resolve => {
+        chrome.storage.local.set({ testKey: 'testValue' }, resolve);
+      });
+    });
+    
+    const data = await page.evaluate(() => {
+      return new Promise(resolve => {
+        chrome.storage.local.get('testKey', resolve);
+      });
+    });
+    
+    expect(data.testKey).toBe('testValue');
+  }, TEST_TIMEOUT);
+});
+
+// ============================================
+// FILE: tests/advanced.test.js
+// ============================================
+const puppeteer = require('puppeteer');
+const path = require('path');
+
+const EXTENSION_PATH = path.join(__dirname, '../extension');
+
+describe('Advanced Extension Tests', () => {
+  let browser;
+  let page;
+
+  beforeEach(async () => {
+    browser = await puppeteer.launch({
+      headless: false,
+      args: [
+        `--disable-extensions-except=${EXTENSION_PATH}`,
+        `--load-extension=${EXTENSION_PATH}`
+      ]
+    });
+    page = await browser.newPage();
+  });
+
+  afterEach(async () => {
+    if (browser) await browser.close();
+  });
+
+  test('Multiple pages can use extension', async () => {
+    const page1 = await browser.newPage();
+    const page2 = await browser.newPage();
+    
+    await page1.goto('https://example.com');
+    await page2.goto('https://www.wikipedia.org');
+    
+    await page1.waitForTimeout(1000);
+    await page2.waitForTimeout(1000);
+    
+    const injected1 = await page1.evaluate(() => 
+      document.body.getAttribute('data-extension-injected') === 'true'
+    );
+    const injected2 = await page2.evaluate(() => 
+      document.body.getAttribute('data-extension-injected') === 'true'
+    );
+    
+    expect(injected1).toBe(true);
+    expect(injected2).toBe(true);
+  }, 30000);
+});
+
+// ============================================
+// FILE: README.md
+// ============================================
+# Chrome Extension Testing with Puppeteer
+
+Complete setup for automated testing of Chrome extensions using Puppeteer and Jest.
+
+## Setup
+
+1. Install dependencies:
+```bash
+npm install
+```
+
+2. Run tests:
+```bash
+npm test
+```
+
+3. Run tests in watch mode:
+```bash
+npm run test:watch
+```
+
+## Project Structure
+
+- `extension/` - Chrome extension files
+- `tests/` - Puppeteer test scripts
+- `package.json` - Dependencies and scripts
+
+## Key Points
+
+- Tests run in **non-headless mode** (extensions don't work in headless)
+- Extension ID is dynamically detected
+- Tests cover content scripts, popup, background scripts, and storage
+
+## Writing Tests
+
+```javascript
+test('Your test name', async () => {
+  await page.goto('https://example.com');
+  // Your test code
+}, 30000);
+```
+
+## Debugging
+
+- Browser stays open during tests (headless: false)
+- Use `await page.waitForTimeout(5000)` to pause and inspect
+- Check console logs with `page.on('console', msg => console.log(msg.text()))`

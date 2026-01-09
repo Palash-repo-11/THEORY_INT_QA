@@ -1,0 +1,206 @@
+In Chrome extensions, permissions define what your extension is allowed to do. They are a security boundary, a store-review gate, and a performance control.
+
+Below is a complete, practical breakdown of permissions in MV3.
+
+1. Why Permissions Matter
+
+Permissions control:
+
+Which Chrome APIs you can call
+
+Which websites you can access
+
+What user data you can see
+
+Whether Chrome Web Store will approve your extension
+
+Fewer permissions = faster, safer, higher approval rate
+
+2. Where Permissions Are Defined
+
+In manifest.json:
+
+{
+  "permissions": [],
+  "host_permissions": []
+}
+
+3. Two Main Permission Types (Critical)
+A️⃣ API Permissions (permissions)
+
+Grant access to Chrome extension APIs.
+
+"permissions": [
+  "storage",
+  "tabs",
+  "alarms"
+]
+
+
+Examples:
+
+storage → use chrome.storage
+
+tabs → read tab info
+
+alarms → schedule background work
+
+B️⃣ Host Permissions (host_permissions)
+
+Grant access to websites / URLs.
+
+"host_permissions": [
+  "https://example.com/*"
+]
+
+
+Controls:
+
+Content script injection
+
+Network access (fetch)
+
+Request modification (DNR)
+
+4. Common Permissions (What They Do)
+Permission	Purpose	Risk level
+storage	Save data	Low
+tabs	Tab info	Medium
+activeTab	Temporary tab access	Low
+scripting	Inject scripts	Medium
+alarms	Scheduled tasks	Low
+notifications	Show notifications	Low
+declarativeNetRequest	Block/modify requests	Medium
+identity	OAuth	High
+cookies	Access cookies	High
+webNavigation	Track page navigation	Medium
+5. activeTab vs tabs (Very Important)
+activeTab
+"permissions": ["activeTab"]
+
+
+Temporary access
+
+Granted after user clicks extension
+
+Much safer
+
+Preferred by store review
+
+tabs
+"permissions": ["tabs"]
+
+
+Persistent access
+
+Can see all tabs
+
+Higher review scrutiny
+
+👉 Use activeTab whenever possible
+
+6. Optional Permissions (Request at Runtime)
+Declare optional permissions
+"optional_permissions": [
+  "tabs",
+  "https://api.example.com/*"
+]
+
+Request them dynamically
+chrome.permissions.request({
+  permissions: ["tabs"],
+  origins: ["https://api.example.com/*"]
+});
+
+
+✅ Better UX
+✅ Higher approval chance
+❌ More code complexity
+
+7. Content Scripts & Permissions
+
+Content scripts require:
+
+Matching host_permissions
+
+Or activeTab
+
+"content_scripts": [
+  {
+    "matches": ["https://example.com/*"],
+    "js": ["content.js"]
+  }
+]
+
+
+Without permission → script won’t inject.
+
+8. Dangerous Permissions (Use Sparingly)
+
+Chrome Web Store flags these:
+
+Permission	Why
+<all_urls>	Access to all sites
+cookies	Session hijacking risk
+webRequest	Deprecated
+identity	Account access
+nativeMessaging	OS-level access
+
+Expect manual review if used.
+
+9. Permission Best Practices
+✅ Do
+
+Use least privilege
+
+Narrow host patterns
+
+Prefer activeTab
+
+Use optional permissions
+
+Explain permissions in description
+
+❌ Don’t
+
+Use <all_urls> casually
+
+Request unused permissions
+
+Hide permission usage
+
+Request everything “just in case”
+
+10. Store Review Tips (Real-World)
+
+Chrome reviewers check:
+
+Permission → feature alignment
+
+Overbroad access
+
+Missing privacy policy
+
+Undocumented data use
+
+Mismatch example:
+
+“Why does a theme switcher need cookies?”
+
+❌ Rejected.
+
+11. Example: Well-Scoped Manifest
+{
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://api.myapp.com/*"
+  ]
+}
+
+
+Clean. Safe. Approve-friendly.
+
+

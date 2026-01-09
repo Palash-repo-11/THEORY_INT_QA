@@ -45,7 +45,12 @@
         No DOM access in background
 
 36> How do you perform long-running tasks in MV3?
-
+    ------>
+    Every task must be:
+    Chunked
+    Persisted   
+    Resumable
+    Idempotent
 37> How do you prevent XSS attacks in content scripts?
     ---->
         Never use innerHTML

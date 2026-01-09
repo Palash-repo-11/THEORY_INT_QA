@@ -1,0 +1,132 @@
+Here’s a clean, production-ready folder structure for combining Puppeteer automated tests with a Chrome MV3 extension.
+
+It separates the extension code from the test scripts, making it easier to maintain.
+
+📁 Folder Structure
+puppeteer-chrome-extension/
+│
+├── extension/                 # Your Chrome extension
+│   ├── manifest.json          # MV3 manifest
+│   ├── content.js             # Content script
+│   ├── background/            # Service worker
+│   │   └── service_worker.js
+│   ├── popup/                 # Optional popup UI
+│   │   ├── popup.html
+│   │   └── popup.js
+│   ├── styles/                # Optional CSS
+│   │   └── shadow.css
+│   └── icons/
+│       └── icon128.png
+│
+├── tests/                     # Puppeteer automated tests
+│   ├── puppeteer.config.js    # Optional Puppeteer config
+│   └── extension.test.js      # Test script
+│
+├── package.json               # Node project with Puppeteer dependency
+└── package-lock.json
+
+1️⃣ extension/ Folder
+
+Contains all Chrome extension code:
+
+manifest.json – defines permissions, content scripts, service worker, host access
+
+content.js – injected UI (e.g., Shadow DOM) or DOM manipulation
+
+background/service_worker.js – handles messages, alarms, storage
+
+popup/ – optional extension UI
+
+styles/ – optional CSS for Shadow DOM
+
+icons/ – extension icons
+
+Example manifest.json
+{
+  "manifest_version": 3,
+  "name": "Test Extension",
+  "version": "1.0",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["https://example.com/*"],
+  "background": {
+    "service_worker": "background/service_worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://example.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
+
+2️⃣ tests/ Folder
+
+Contains Puppeteer scripts to launch Chrome and load your extension:
+
+extension.test.js – actual test script
+
+Optional puppeteer.config.js – to define browser args, timeouts, or globals
+
+Example extension.test.js
+const puppeteer = require('puppeteer');
+const path = require('path');
+
+(async () => {
+  const extensionPath = path.resolve(__dirname, '../extension');
+
+  const browser = await puppeteer.launch({
+    headless: false,
+    args: [
+      `--disable-extensions-except=${extensionPath}`,
+      `--load-extension=${extensionPath}`
+    ]
+  });
+
+  const page = await browser.newPage();
+  await page.goto('https://example.com');
+
+  // Access content script DOM (Shadow DOM)
+  const result = await page.evaluate(() =>
+    document.querySelector('#my-extension-host')?.textContent
+  );
+  console.log('Content Script Text:', result);
+
+  await browser.close();
+})();
+
+3️⃣ package.json
+
+Your Node project file to install Puppeteer:
+
+{
+  "name": "puppeteer-chrome-extension",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "node tests/extension.test.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.3.0"
+  }
+}
+
+
+Install dependencies:
+
+npm install
+
+
+Run tests:
+
+npm test
+
+4️⃣ Notes / Best Practices
+
+Keep extension and tests separate.
+
+Always use relative paths to load your extension in Puppeteer.
+
+Use headless: false → extensions cannot load in headless Chrome.
+
+Separate content script testing from service worker testing.
+
+Clean up DOM or storage in tests to avoid state pollution.

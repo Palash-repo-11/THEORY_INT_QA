@@ -1,0 +1,3 @@
+1> How chrome extension handle update in code ein local environment?
+2> How chrome extension handle update in the webstore?
+

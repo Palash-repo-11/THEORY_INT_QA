@@ -1,0 +1,105 @@
+// manifest.json
+
+{
+  "manifest_version": 3,
+  "name": "MV3 Request Control Example",
+  "version": "1.0.0",
+
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess"
+  ],
+
+  "host_permissions": [
+    "<all_urls>"
+  ],
+
+  "background": {
+    "service_worker": "background/service_worker.js"
+  },
+
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "static_rules",
+        "enabled": true,
+        "path": "rules/static_rules.json"
+      }
+    ]
+  },
+
+  "icons": {
+    "128": "icons/icon128.png"
+  }
+}
+
+
+// rules/static_rules.json
+
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "ads.example.com",
+      "resourceTypes": ["script", "image"]
+    }
+  }
+]
+
+
+//background/service_worker.js
+
+chrome.runtime.onInstalled.addListener(() => {
+  console.log('Service worker installed');
+});
+
+// Add a dynamic blocking rule
+async function blockDomain(domain) {
+  await chrome.declarativeNetRequest.updateDynamicRules({
+    addRules: [
+      {
+        id: 100,
+        priority: 1,
+        action: { type: 'block' },
+        condition: {
+          urlFilter: domain,
+          resourceTypes: ['script', 'image', 'xmlhttprequest']
+        }
+      }
+    ],
+    removeRuleIds: []
+  });
+}
+
+// Remove a dynamic rule
+async function unblockDomain(ruleId) {
+  await chrome.declarativeNetRequest.updateDynamicRules({
+    addRules: [],
+    removeRuleIds: [ruleId]
+  });
+}
+
+// Example usage
+blockDomain('tracking.example.com');
+
+
+
+// How It Works (Flow)
+
+/*
+Network Request
+     ↓
+Chrome Native Engine
+     ↓
+Declarative Net Request Rules
+     ↓
+Block / Redirect / Modify
+*/
+
+// Explanation:
+// 1. The extension defines static rules in "rules/static_rules.json" to block requests to "ads.example.com".
+// 2. The service worker listens for installation events and can dynamically add or remove rules using the `blockDomain` and `unblockDomain` functions.
+// 3. When a network request is made, Chrome checks the request against the defined rules and applies the appropriate action (e.g., block).
+
