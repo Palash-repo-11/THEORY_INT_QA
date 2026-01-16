@@ -1,0 +1,147 @@
+🔹 Core React Fundamentals (Must-Know)
+
+What is React & why use it (SPA, component-based architecture)
+JSX (how it works, expressions, limitations)
+Functional vs Class Components
+Props vs State (immutability)
+Component re-rendering
+Conditional rendering
+Lists & keys (why keys are important)
+Event handling in React
+Forms & controlled vs uncontrolled components
+
+🔹 Hooks (Very Important ⭐)
+
+useState
+useEffect (dependency array, cleanup)
+useContext
+useRef
+useMemo
+useCallback
+useReducer
+Custom Hooks (why & how)
+Rules of Hooks
+
+
+🔹 Component Lifecycle (Interview Favorite)
+
+Lifecycle phases (Mount, Update, Unmount)
+Lifecycle methods (class components)
+Lifecycle equivalent in hooks (useEffect)
+Cleanup in useEffect
+
+
+🔹 State Management
+
+Lifting state up
+Prop drilling & its problems
+Context API
+Redux basics (store, action, reducer)
+Redux Toolkit
+When to use Context vs Redux
+Local state vs global state
+
+
+🔹 Performance Optimization (High-Value Topic 🚀)
+
+React re-rendering behavior
+React.memo
+useMemo vs useCallback
+Avoiding unnecessary re-renders
+Virtual DOM vs Real DOM
+Reconciliation
+Lazy loading (React.lazy, Suspense)
+Code splitting
+
+
+🔹 Routing
+
+React Router (BrowserRouter, Routes, Route)\
+Dynamic routes
+Route params & query params
+Protected routes
+useParams, useNavigate, useLocation
+
+
+🔹 Forms & Validation
+
+Controlled forms
+Uncontrolled forms
+Form libraries (Formik, React Hook Form)
+Validation strategies
+
+
+🔹 API & Data Handling
+
+Fetching data (fetch, axios)
+Handling loading & error states
+useEffect with API calls
+Pagination & infinite scroll
+Debouncing & throttling
+
+
+🔹 Styling in React
+
+CSS Modules
+Inline styles
+Styled-components
+Tailwind CSS
+Conditional styling
+
+
+🔹 Testing (Mid–Senior Level)
+
+Unit testing basics
+Jest
+React Testing Library
+Testing components & hooks
+
+
+
+🔹 Advanced & Architecture Topics (Senior-Level 🔥)
+
+Controlled vs uncontrolled components
+Higher Order Components (HOC)
+Render Props
+Compound components
+Error Boundaries
+Portals
+Refs & forwardRef
+Context performance issues
+SSR vs CSR (Next.js basics)
+Hydration
+
+
+
+🔹 React + Browser Concepts (Often Asked)
+
+Event delegation
+Synthetic events
+DOM vs Virtual DOM
+How React works internally
+Batching updates
+
+
+
+🔹 Common Interview Coding Tasks
+
+Counter app
+Todo list
+Form with validation
+Search with debounce
+Pagination
+Modal using portals
+Optimized list rendering
+
+
+
+
+⭐ Most Important Focus Areas (If Time Is Less)
+
+Hooks (useEffect, useMemo, useCallback)
+Re-rendering & performance
+Props vs State
+Controlled forms
+Context vs Redux
+React Router
+Virtual DOM & reconciliation
