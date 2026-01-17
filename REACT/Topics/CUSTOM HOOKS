@@ -1,0 +1,697 @@
+# 🔵 CUSTOM HOOKS – REACT INTERVIEW QUESTIONS WITH ANSWERS & CODE
+
+---
+
+## 1️⃣ What is a Custom Hook?
+
+A **custom hook** is a **JavaScript function** that:
+
+* Starts with `use`
+* Reuses **stateful logic**
+* Uses React hooks internally
+
+```js
+function useCounter() {
+  const [count, setCount] = useState(0);
+  return { count, setCount };
+}
+```
+
+---
+
+## 2️⃣ Why do we need Custom Hooks?
+
+* Reuse logic across components
+* Cleaner components
+* Better separation of concerns
+* Avoid code duplication
+
+---
+
+## 3️⃣ When should you create a Custom Hook?
+
+* Same logic used in **multiple components**
+* Logic unrelated to UI
+* Complex side-effect handling
+
+---
+
+## 4️⃣ Rules of Custom Hooks
+
+* Must start with `use`
+* Can use other hooks
+* Cannot be called conditionally
+* Must be called at top level
+
+---
+
+## 5️⃣ Custom Hook vs Component
+
+| Custom Hook            | Component    |
+| ---------------------- | ------------ |
+| Logic reuse            | UI rendering |
+| Returns data/functions | Returns JSX  |
+
+---
+
+## 6️⃣ Simple Custom Hook Example
+
+### useToggle
+
+```js
+import { useState } from "react";
+
+function useToggle(initial = false) {
+  const [value, setValue] = useState(initial);
+
+  const toggle = () => setValue(v => !v);
+
+  return [value, toggle];
+}
+```
+
+Usage:
+
+```js
+const [isOpen, toggle] = useToggle();
+```
+
+---
+
+## 7️⃣ Custom Hook with useEffect
+
+### useOnlineStatus
+
+```js
+function useOnlineStatus() {
+  const [online, setOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const goOnline = () => setOnline(true);
+    const goOffline = () => setOnline(false);
+
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+
+    return () => {
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
+    };
+  }, []);
+
+  return online;
+}
+```
+
+---
+
+## 8️⃣ Why cleanup is important in Custom Hooks?
+
+* Prevent memory leaks
+* Shared logic must be safe
+* Cleanup happens per component
+
+---
+
+## 9️⃣ Custom Hook for API Calls
+
+### useFetch
+
+```js
+function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function fetchData() {
+      try {
+        const res = await fetch(url, { signal: controller.signal });
+        const json = await res.json();
+        setData(json);
+      } catch (err) {
+        if (err.name !== "AbortError") setError(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+
+    return () => controller.abort();
+  }, [url]);
+
+  return { data, loading, error };
+}
+```
+
+---
+
+## 🔟 How to pass parameters to Custom Hooks?
+
+```js
+const { data } = useFetch("/users");
+```
+
+---
+
+## 1️⃣1️⃣ Custom Hook returning functions
+
+```js
+function useCounter() {
+  const [count, setCount] = useState(0);
+
+  const inc = () => setCount(c => c + 1);
+  const dec = () => setCount(c => c - 1);
+
+  return { count, inc, dec };
+}
+```
+
+---
+
+## 1️⃣2️⃣ Custom Hook with useCallback
+
+```js
+function useSearch() {
+  const search = useCallback((term) => {
+    console.log(term);
+  }, []);
+
+  return search;
+}
+```
+
+---
+
+## 1️⃣3️⃣ Custom Hook vs HOC
+
+| Custom Hook | HOC             |
+| ----------- | --------------- |
+| Cleaner     | Wrapper hell    |
+| Composable  | Harder to debug |
+| Modern      | Legacy pattern  |
+
+---
+
+## 1️⃣4️⃣ Custom Hook vs Render Props
+
+Custom Hooks are:
+
+* Easier
+* Less boilerplate
+* More readable
+
+---
+
+## 1️⃣5️⃣ Can Custom Hooks share state?
+
+❌ NO
+Each call gets **independent state**
+
+---
+
+## 1️⃣6️⃣ How to share state using Custom Hooks?
+
+Use:
+
+* Context
+* Redux
+
+---
+
+## 1️⃣7️⃣ Custom Hook with Context
+
+```js
+function useAuth() {
+  return useContext(AuthContext);
+}
+```
+
+---
+
+## 1️⃣8️⃣ Naming Convention
+
+✅ useSomething
+❌ getDataHook
+
+---
+
+## 1️⃣9️⃣ Testing Custom Hooks
+
+Using React Testing Library:
+
+```js
+renderHook(() => useCounter());
+```
+
+---
+
+## 2️⃣0️⃣ Common Mistakes
+
+❌ Calling hook inside condition
+❌ Returning JSX
+❌ Missing dependencies
+❌ Over-abstracting logic
+
+---
+
+## 2️⃣1️⃣ Performance Considerations
+
+* Memoize returned functions
+* Avoid unnecessary effects
+* Avoid over-customization
+
+---
+
+## 2️⃣2️⃣ Custom Hook Folder Structure
+
+```
+src/
+ ├── hooks/
+ │    ├── useFetch.js
+ │    ├── useToggle.js
+```
+
+---
+
+## 2️⃣3️⃣ Real-World Custom Hooks Examples
+
+* useDebounce
+* useThrottle
+* useAuth
+* useForm
+* useTheme
+
+---
+
+## 2️⃣4️⃣ useDebounce Example
+
+```js
+function useDebounce(value, delay) {
+  const [debounced, setDebounced] = useState(value);
+
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay]);
+
+  return debounced;
+}
+```
+
+---
+
+## 2️⃣5️⃣ Interview One-Liner
+
+"Custom hooks allow reusable, clean, and composable stateful logic across React components."
+
+---
+
+## 2️⃣6️⃣ When NOT to use Custom Hooks?
+
+* UI logic
+* One-time logic
+* Simple state
+
+---
+
+## 2️⃣7️⃣ MUST PRACTICE BEFORE INTERVIEW
+
+✅ useFetch
+✅ useDebounce
+✅ Cleanup handling
+✅ Context + hook
+✅ Dependency management
+
+---
+
+🎯 YOU ARE NOW INTERVIEW-READY FOR
+🔥 **CUSTOM HOOKS IN REACT**
+
+
+
+
+
+# 🔵 ADVANCED CUSTOM HOOKS – INTERVIEW Q&A WITH CODE
+
+---
+
+## ✅ 1️⃣ useFetch – Questions & Code
+
+### Q1. What is useFetch?
+
+A custom hook that **encapsulates API logic** (loading, data, error) for reuse.
+
+---
+
+### Q2. Why not fetch directly inside components?
+
+* Code duplication
+* Hard to test
+* Poor separation of concerns
+
+---
+
+### Q3. Basic useFetch Implementation
+
+```js
+import { useEffect, useState } from "react";
+
+function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchData() {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Failed");
+        const json = await res.json();
+        if (isMounted) setData(json);
+      } catch (err) {
+        if (isMounted) setError(err.message);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    fetchData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [url]);
+
+  return { data, loading, error };
+}
+```
+
+---
+
+### Q4. useFetch with AbortController (BEST PRACTICE)
+
+```js
+useEffect(() => {
+  const controller = new AbortController();
+
+  fetch(url, { signal: controller.signal });
+
+  return () => controller.abort();
+}, [url]);
+```
+
+---
+
+### Q5. Interview One-liner
+
+"`useFetch` abstracts API logic into a reusable hook with proper loading, error, and cleanup handling."
+
+---
+
+## ✅ 2️⃣ useDebounce – Questions & Code
+
+---
+
+### Q6. What is Debouncing?
+
+Delays execution until user **stops triggering an event**.
+
+📌 Used in search, filters, input validation.
+
+---
+
+### Q7. useDebounce Custom Hook
+
+```js
+import { useEffect, useState } from "react";
+
+function useDebounce(value, delay = 500) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+```
+
+---
+
+### Q8. How to use useDebounce?
+
+```js
+const debouncedSearch = useDebounce(searchText, 400);
+
+useEffect(() => {
+  fetch(`/api?q=${debouncedSearch}`);
+}, [debouncedSearch]);
+```
+
+---
+
+### Q9. Debounce vs Throttle?
+
+| Debounce | Throttle         |
+| -------- | ---------------- |
+| Waits    | Limits frequency |
+| Search   | Scroll events    |
+
+---
+
+## ✅ 3️⃣ Cleanup Handling – Questions & Code
+
+---
+
+### Q10. What is Cleanup in Hooks?
+
+Cleanup removes **side effects** before re-run or unmount.
+
+---
+
+### Q11. Why Cleanup is Mandatory?
+
+* Prevent memory leaks
+* Avoid duplicated listeners
+* Cancel async tasks
+
+---
+
+### Q12. Cleanup Example – Event Listener
+
+```js
+useEffect(() => {
+  const onScroll = () => console.log("scrolling");
+
+  window.addEventListener("scroll", onScroll);
+
+  return () => {
+    window.removeEventListener("scroll", onScroll);
+  };
+}, []);
+```
+
+---
+
+### Q13. Cleanup Example – setTimeout
+
+```js
+useEffect(() => {
+  const id = setTimeout(() => {}, 1000);
+  return () => clearTimeout(id);
+}, []);
+```
+
+---
+
+### Q14. Interview Trap
+
+❌ Forgetting cleanup in custom hooks is a **production bug**
+
+---
+
+## ✅ 4️⃣ Context + Custom Hook – Questions & Code
+
+---
+
+### Q15. Why combine Context with Custom Hooks?
+
+* Clean API
+* No repeated `useContext`
+* Better abstraction
+
+---
+
+### Q16. Auth Context Setup
+
+```js
+import { createContext, useContext, useState } from "react";
+
+const AuthContext = createContext(null);
+
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+
+  const login = (userData) => setUser(userData);
+  const logout = () => setUser(null);
+
+  return (
+    <AuthContext.Provider value={{ user, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+```
+
+---
+
+### Q17. Custom Hook for Context
+
+```js
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used inside AuthProvider");
+  }
+  return context;
+}
+```
+
+---
+
+### Q18. Usage
+
+```js
+const { user, login, logout } = useAuth();
+```
+
+---
+
+### Q19. Interview One-liner
+
+"Context + custom hooks provide a clean and scalable way to share global state."
+
+---
+
+## ✅ 5️⃣ Dependency Management – Questions & Code
+
+---
+
+### Q20. What is Dependency Array?
+
+Controls **when effects re-run**.
+
+---
+
+### Q21. Why Dependency Management is critical?
+
+* Prevent stale data
+* Avoid infinite loops
+* Ensure correctness
+
+---
+
+### Q22. Missing Dependency Bug
+
+```js
+useEffect(() => {
+  console.log(count);
+}, []); // ❌ count missing
+```
+
+---
+
+### Q23. Correct Dependency Usage
+
+```js
+useEffect(() => {
+  console.log(count);
+}, [count]);
+```
+
+---
+
+### Q24. Functions in Dependency Array?
+
+Yes — unless memoized.
+
+```js
+const fetchData = useCallback(() => {}, []);
+
+useEffect(() => {
+  fetchData();
+}, [fetchData]);
+```
+
+---
+
+### Q25. ESLint Warning – Should you ignore?
+
+❌ NO
+Fix root cause or memoize dependencies.
+
+---
+
+### Q26. Infinite Loop Example
+
+```js
+useEffect(() => {
+  setValue(value + 1);
+}, [value]); // ❌
+```
+
+---
+
+### Q27. Fix with Functional Update
+
+```js
+useEffect(() => {
+  setValue(v => v + 1);
+}, []);
+```
+
+---
+
+## ✅ MOST ASKED INTERVIEW QUESTIONS (RAPID FIRE)
+
+* Can custom hooks share state? ❌
+* Is cleanup required in custom hooks? ✅
+* Does useDebounce need cleanup? ✅
+* Should functions be dependencies? ✅
+* Can hooks return JSX? ❌
+
+---
+
+## 🎯 FINAL INTERVIEW ONE-LINER
+
+"Advanced custom hooks like useFetch and useDebounce encapsulate reusable logic, manage dependencies correctly, and prevent memory leaks through proper cleanup."
+
+---
+
+## 🚀 YOU ARE NOW STRONG IN:
+
+✅ Real-world hooks
+✅ Cleanup & performance
+✅ Dependency correctness
+✅ Context architecture
+
+---
+
+If you want next (very high value):
+
+* 🔥 **useMemo & useCallback (with traps)**
+* 🔥 **useRef (DOM + state escape hatch)**
+* 🔥 **React performance interview questions**
+* 🔥 **Senior-level React scenarios**
+
+Just tell me 👍
