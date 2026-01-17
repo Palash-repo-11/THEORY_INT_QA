@@ -1,0 +1,365 @@
+# 🔵 useEffect, Dependency Array & Cleanup – INTERVIEW QUESTIONS WITH ANSWERS & CODE
+
+---
+
+## 1️⃣ What is useEffect?
+
+`useEffect` is a React Hook used to perform **side effects** in functional components.
+
+➡️ Side effects = API calls, subscriptions, timers, DOM updates
+
+```jsx
+useEffect(() => {
+  console.log("Component mounted");
+});
+```
+
+---
+
+## 2️⃣ Why do we need useEffect?
+
+* Replace lifecycle methods (`componentDidMount`, `componentDidUpdate`, `componentWillUnmount`)
+* Handle async logic
+* Sync React with external systems
+
+---
+
+## 3️⃣ When does useEffect run?
+
+By default:
+
+* Runs **after every render**
+
+---
+
+## 4️⃣ Syntax of useEffect
+
+```jsx
+useEffect(() => {
+  // side effect
+  return () => {
+    // cleanup
+  };
+}, [dependencies]);
+```
+
+---
+
+## 5️⃣ What is Dependency Array?
+
+Dependency array controls **when useEffect runs**.
+
+```jsx
+useEffect(() => {
+  console.log("Runs when count changes");
+}, [count]);
+```
+
+---
+
+## 6️⃣ Types of Dependency Array
+
+### 🔹 No dependency array
+
+Runs on **every render**
+
+```jsx
+useEffect(() => {
+  console.log("Every render");
+});
+```
+
+---
+
+### 🔹 Empty dependency array `[]`
+
+Runs **only once (on mount)**
+
+```jsx
+useEffect(() => {
+  console.log("Component mounted");
+}, []);
+```
+
+---
+
+### 🔹 With dependencies
+
+Runs when dependency changes
+
+```jsx
+useEffect(() => {
+  console.log("Count changed");
+}, [count]);
+```
+
+---
+
+## 7️⃣ What happens if dependency is missing?
+
+❌ Stale data
+❌ Infinite loops
+❌ Bugs
+
+---
+
+## 8️⃣ Why ESLint warns about dependencies?
+
+To prevent:
+
+* Stale closures
+* Missed updates
+* Unexpected behavior
+
+---
+
+## 9️⃣ What is Cleanup Function?
+
+Cleanup runs:
+
+* Before component unmounts
+* Before effect re-runs
+
+```jsx
+useEffect(() => {
+  return () => {
+    console.log("Cleanup");
+  };
+}, []);
+```
+
+---
+
+## 🔟 Why Cleanup is important?
+
+* Prevent memory leaks
+* Remove event listeners
+* Clear timers
+* Cancel subscriptions
+
+---
+
+## 1️⃣1️⃣ Cleanup Example – Event Listener
+
+```jsx
+useEffect(() => {
+  const handleResize = () => console.log("Resized");
+
+  window.addEventListener("resize", handleResize);
+
+  return () => {
+    window.removeEventListener("resize", handleResize);
+  };
+}, []);
+```
+
+---
+
+## 1️⃣2️⃣ Cleanup Example – setInterval
+
+```jsx
+useEffect(() => {
+  const id = setInterval(() => {
+    console.log("Running...");
+  }, 1000);
+
+  return () => clearInterval(id);
+}, []);
+```
+
+---
+
+## 1️⃣3️⃣ Cleanup Example – API call (AbortController)
+
+```jsx
+useEffect(() => {
+  const controller = new AbortController();
+
+  fetch("/api/data", { signal: controller.signal });
+
+  return () => controller.abort();
+}, []);
+```
+
+---
+
+## 1️⃣4️⃣ useEffect vs Lifecycle Methods
+
+| Class                | Hook             |
+| -------------------- | ---------------- |
+| componentDidMount    | useEffect([],)   |
+| componentDidUpdate   | useEffect([dep]) |
+| componentWillUnmount | cleanup function |
+
+---
+
+## 1️⃣5️⃣ What is Infinite Loop in useEffect?
+
+Updating a dependency inside effect.
+
+❌ Wrong
+
+```jsx
+useEffect(() => {
+  setCount(count + 1);
+}, [count]);
+```
+
+---
+
+## 1️⃣6️⃣ Fix Infinite Loop
+
+```jsx
+useEffect(() => {
+  setCount(c => c + 1);
+}, []);
+```
+
+---
+
+## 1️⃣7️⃣ Can we use async directly in useEffect?
+
+❌ No
+
+✅ Correct way:
+
+```jsx
+useEffect(() => {
+  async function fetchData() {
+    const res = await fetch("/api");
+  }
+  fetchData();
+}, []);
+```
+
+---
+
+## 1️⃣8️⃣ Multiple useEffect?
+
+✅ Yes
+Best practice: **separate concerns**
+
+```jsx
+useEffect(() => {}, [user]);
+useEffect(() => {}, [theme]);
+```
+
+---
+
+## 1️⃣9️⃣ What is Stale Closure?
+
+Effect using **old state value**.
+
+```jsx
+useEffect(() => {
+  setTimeout(() => {
+    console.log(count); // old value
+  }, 1000);
+}, []);
+```
+
+---
+
+## 2️⃣0️⃣ Fix Stale Closure
+
+```jsx
+useEffect(() => {
+  setTimeout(() => {
+    setCount(c => c + 1);
+  }, 1000);
+}, []);
+```
+
+---
+
+## 2️⃣1️⃣ Should functions be in dependency array?
+
+✅ Yes (unless memoized)
+
+```jsx
+useEffect(() => {
+  fetchData();
+}, [fetchData]);
+```
+
+---
+
+## 2️⃣2️⃣ How to avoid function dependency?
+
+Use `useCallback`.
+
+```jsx
+const fetchData = useCallback(() => {
+  // logic
+}, []);
+```
+
+---
+
+## 2️⃣3️⃣ useEffect vs useLayoutEffect
+
+| useEffect   | useLayoutEffect |
+| ----------- | --------------- |
+| Async       | Sync            |
+| After paint | Before paint    |
+
+---
+
+## 2️⃣4️⃣ When to use useLayoutEffect?
+
+* DOM measurements
+* Prevent flickering
+
+---
+
+## 2️⃣5️⃣ useEffect Cleanup Order
+
+1. Cleanup old effect
+2. Run new effect
+3. Cleanup on unmount
+
+---
+
+## 2️⃣6️⃣ Common Mistakes
+
+❌ Missing dependency
+❌ Overusing empty array
+❌ No cleanup
+❌ Business logic inside effect
+
+---
+
+## 2️⃣7️⃣ Performance Tips
+
+* Split effects
+* Memoize functions
+* Avoid unnecessary dependencies
+
+---
+
+## 2️⃣8️⃣ Interview One-Liner
+
+"`useEffect` handles side effects and dependency array controls when it runs, while cleanup prevents memory leaks."
+
+---
+
+## 2️⃣9️⃣ When NOT to use useEffect?
+
+* Pure calculations
+* Rendering logic
+* Derived state
+
+---
+
+## 3️⃣0️⃣ MUST PRACTICE BEFORE INTERVIEW
+
+✅ Dependency behavior
+✅ Cleanup logic
+✅ Infinite loop fixes
+✅ Stale closure
+✅ Async handling
+
+---
+
+🎯 YOU ARE NOW INTERVIEW-READY FOR
+🔥 **useEffect, Dependency Array & Cleanup**

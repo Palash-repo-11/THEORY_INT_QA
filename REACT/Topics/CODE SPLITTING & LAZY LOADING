@@ -1,0 +1,332 @@
+# 🔵 CODE SPLITTING & LAZY LOADING – REACT INTERVIEW QUESTIONS WITH ANSWERS & CODE
+
+---
+
+## 1️⃣ What is Code Splitting?
+
+Code splitting is a technique to **split a large JavaScript bundle into smaller chunks** that are loaded **on demand**.
+
+➡️ Improves **initial load time**.
+
+---
+
+## 2️⃣ Why is Code Splitting important?
+
+* Faster initial page load
+* Better performance
+* Reduced bundle size
+* Improved user experience
+
+---
+
+## 3️⃣ What is Lazy Loading?
+
+Lazy loading means **loading components only when they are needed**.
+
+➡️ A form of code splitting.
+
+---
+
+## 4️⃣ Difference between Code Splitting & Lazy Loading?
+
+| Code Splitting | Lazy Loading      |
+| -------------- | ----------------- |
+| Splits bundle  | Loads chunk later |
+| Build-time     | Runtime behavior  |
+
+---
+
+## 5️⃣ When should you use Lazy Loading?
+
+* Large components
+* Route-based pages
+* Heavy libraries (charts, editors)
+* Modals & dashboards
+
+---
+
+## 6️⃣ How does React support Lazy Loading?
+
+Using:
+
+* `React.lazy()`
+* `Suspense`
+
+---
+
+## 7️⃣ Basic Lazy Loading Example
+
+```jsx
+import React, { Suspense } from "react";
+
+const Dashboard = React.lazy(() => import("./Dashboard"));
+
+function App() {
+  return (
+    <Suspense fallback={<h2>Loading...</h2>}>
+      <Dashboard />
+    </Suspense>
+  );
+}
+```
+
+---
+
+## 8️⃣ What is Suspense?
+
+Suspense shows a **fallback UI** while a lazy component is loading.
+
+```jsx
+<Suspense fallback={<Loader />}>
+  <Component />
+</Suspense>
+```
+
+---
+
+## 9️⃣ Can Suspense work without React.lazy?
+
+❌ No (for component code splitting)
+
+---
+
+## 🔟 Route-based Code Splitting (MOST COMMON)
+
+```jsx
+const Home = React.lazy(() => import("./pages/Home"));
+const Profile = React.lazy(() => import("./pages/Profile"));
+
+<Routes>
+  <Route
+    path="/"
+    element={
+      <Suspense fallback={<Loader />}>
+        <Home />
+      </Suspense>
+    }
+  />
+</Routes>
+```
+
+---
+
+## 1️⃣1️⃣ Better Pattern (Recommended)
+
+```jsx
+<Suspense fallback={<Loader />}>
+  <Routes>
+    <Route path="/" element={<Home />} />
+    <Route path="/profile" element={<Profile />} />
+  </Routes>
+</Suspense>
+```
+
+---
+
+## 1️⃣2️⃣ Lazy Loading with Named Exports
+
+❌ Not supported directly
+
+✅ Solution:
+
+```jsx
+const MyComp = React.lazy(() =>
+  import("./MyComp").then(module => ({
+    default: module.MyComp
+  }))
+);
+```
+
+---
+
+## 1️⃣3️⃣ Lazy Loading Components vs Libraries
+
+Components → React.lazy
+Libraries → Dynamic import
+
+```jsx
+const loadChart = async () => {
+  const chart = await import("chart.js");
+};
+```
+
+---
+
+## 1️⃣4️⃣ What is Dynamic Import?
+
+JavaScript feature to load modules asynchronously.
+
+```js
+import("./utils").then(module => module.func());
+```
+
+---
+
+## 1️⃣5️⃣ Lazy Loading Modal Example
+
+```jsx
+const Modal = React.lazy(() => import("./Modal"));
+
+{show && (
+  <Suspense fallback={null}>
+    <Modal />
+  </Suspense>
+)}
+```
+
+---
+
+## 1️⃣6️⃣ What happens behind the scenes?
+
+* Webpack/Vite creates chunks
+* Browser downloads chunk when needed
+* React renders after load
+
+---
+
+## 1️⃣7️⃣ Code Splitting without React.lazy?
+
+Yes, using dynamic imports.
+
+```js
+if (condition) {
+  import("./feature").then(f => f.init());
+}
+```
+
+---
+
+## 1️⃣8️⃣ Difference between Eager & Lazy loading?
+
+| Eager             | Lazy            |
+| ----------------- | --------------- |
+| Loads immediately | Loads on demand |
+| Slower startup    | Faster startup  |
+
+---
+
+## 1️⃣9️⃣ Error Handling in Lazy Loading
+
+Use **Error Boundary**.
+
+```jsx
+class ErrorBoundary extends React.Component {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    return this.state.hasError
+      ? <h3>Error loading</h3>
+      : this.props.children;
+  }
+}
+```
+
+---
+
+## 2️⃣0️⃣ Lazy Loading with Error Boundary
+
+```jsx
+<ErrorBoundary>
+  <Suspense fallback={<Loader />}>
+    <HeavyComponent />
+  </Suspense>
+</ErrorBoundary>
+```
+
+---
+
+## 2️⃣1️⃣ Does Lazy Loading improve SEO?
+
+❌ Not directly
+✅ Works with SSR (Next.js)
+
+---
+
+## 2️⃣2️⃣ Code Splitting in Next.js
+
+Automatic per-page splitting.
+
+```js
+import dynamic from "next/dynamic";
+
+const Chart = dynamic(() => import("../Chart"), {
+  ssr: false,
+  loading: () => <Loader />
+});
+```
+
+---
+
+## 2️⃣3️⃣ Vite vs Webpack (Code Splitting)
+
+| Vite              | Webpack      |
+| ----------------- | ------------ |
+| Native ES modules | Bundle-based |
+| Faster dev        | Slower dev   |
+
+---
+
+## 2️⃣4️⃣ Preloading Lazy Components
+
+```js
+const Page = React.lazy(() => import("./Page"));
+
+Page.preload = () => import("./Page");
+```
+
+---
+
+## 2️⃣5️⃣ What is Chunk?
+
+A split JavaScript file created during build.
+
+---
+
+## 2️⃣6️⃣ Common Mistakes
+
+❌ Lazy loading small components
+❌ Missing Suspense
+❌ No fallback UI
+❌ Over-splitting
+
+---
+
+## 2️⃣7️⃣ Performance Best Practices
+
+* Lazy load routes
+* Lazy load heavy libs
+* Use skeleton loaders
+* Avoid nested Suspense abuse
+
+---
+
+## 2️⃣8️⃣ Interview One-Liner
+
+"Code splitting breaks the bundle into smaller chunks, while lazy loading loads those chunks only when required."
+
+---
+
+## 2️⃣9️⃣ When NOT to use Lazy Loading?
+
+* Small apps
+* Critical UI
+* Above-the-fold content
+
+---
+
+## 3️⃣0️⃣ MUST PRACTICE BEFORE INTERVIEW
+
+✅ React.lazy
+✅ Suspense
+✅ Route-based splitting
+✅ Error boundaries
+✅ Dynamic import
+
+---
+
+🎯 YOU ARE NOW INTERVIEW-READY FOR
+🔥 **CODE SPLITTING & LAZY LOADING**

@@ -1,0 +1,423 @@
+# 🔵 REACT ROUTING (React Router) – INTERVIEW QUESTIONS WITH ANSWERS & CODE
+
+---
+
+## 1️⃣ What is React Router?
+
+React Router is a **client-side routing library** used to build **Single Page Applications (SPA)** in React.
+
+➡️ It changes UI **without reloading the page**.
+
+---
+
+## 2️⃣ Why do we need Routing in React?
+
+* Multiple pages without page refresh
+* Better user experience
+* URL-based navigation
+* SPA behavior
+
+---
+
+## 3️⃣ What is SPA (Single Page Application)?
+
+An application where:
+
+* Only **one HTML page** loads
+* Content updates dynamically using JavaScript
+
+---
+
+## 4️⃣ Which package is used for routing in React?
+
+```bash
+npm install react-router-dom
+```
+
+---
+
+## 5️⃣ What are the core components of React Router?
+
+* **BrowserRouter**
+* **Routes**
+* **Route**
+* **Link / NavLink**
+* **useParams**
+* **useNavigate**
+* **useLocation**
+
+---
+
+## 6️⃣ What is BrowserRouter?
+
+It enables routing using **HTML5 history API**.
+
+```jsx
+import { BrowserRouter } from "react-router-dom";
+
+<BrowserRouter>
+  <App />
+</BrowserRouter>
+```
+
+---
+
+## 7️⃣ What is Routes?
+
+`Routes` is a wrapper that contains all `Route` components.
+
+```jsx
+<Routes>
+  <Route path="/" element={<Home />} />
+</Routes>
+```
+
+---
+
+## 8️⃣ What is Route?
+
+Defines **path → component mapping**.
+
+```jsx
+<Route path="/about" element={<About />} />
+```
+
+---
+
+## 9️⃣ Difference between Routes & Route?
+
+| Routes             | Route             |
+| ------------------ | ----------------- |
+| Wraps routes       | Defines path      |
+| Matches best route | Renders component |
+
+---
+
+## 🔟 What is Link?
+
+Used for navigation **without page reload**.
+
+```jsx
+<Link to="/about">About</Link>
+```
+
+---
+
+## 1️⃣1️⃣ Difference between Link & anchor (`<a>`) tag?
+
+| Link           | `<a>`       |
+| -------------- | ----------- |
+| SPA navigation | Page reload |
+| Faster         | Slower      |
+
+---
+
+## 1️⃣2️⃣ What is NavLink?
+
+Same as Link but supports **active styling**.
+
+```jsx
+<NavLink 
+  to="/home"
+  className={({ isActive }) => isActive ? "active" : ""}
+>
+  Home
+</NavLink>
+```
+
+---
+
+## 1️⃣3️⃣ What is useNavigate?
+
+Used for **programmatic navigation**.
+
+```jsx
+const navigate = useNavigate();
+navigate("/login");
+```
+
+---
+
+## 1️⃣4️⃣ When do you use useNavigate?
+
+* After form submit
+* After login/logout
+* Redirect logic
+
+---
+
+## 1️⃣5️⃣ What is useParams?
+
+Used to read **URL parameters**.
+
+```jsx
+<Route path="/user/:id" element={<User />} />
+```
+
+```jsx
+const { id } = useParams();
+```
+
+---
+
+## 1️⃣6️⃣ What is useLocation?
+
+Gives current route info.
+
+```jsx
+const location = useLocation();
+console.log(location.pathname);
+```
+
+---
+
+## 1️⃣7️⃣ What is Dynamic Routing?
+
+Routing based on dynamic values.
+
+```jsx
+/product/:productId
+```
+
+---
+
+## 1️⃣8️⃣ What is Nested Routing?
+
+Routing inside another route.
+
+```jsx
+<Route path="/dashboard" element={<Dashboard />}>
+  <Route path="profile" element={<Profile />} />
+  <Route path="settings" element={<Settings />} />
+</Route>
+```
+
+```jsx
+<Outlet />
+```
+
+---
+
+## 1️⃣9️⃣ What is Outlet?
+
+Renders **child route component**.
+
+```jsx
+import { Outlet } from "react-router-dom";
+<Outlet />
+```
+
+---
+
+## 2️⃣0️⃣ What is Index Route?
+
+Default route inside nested routes.
+
+```jsx
+<Route index element={<DashboardHome />} />
+```
+
+---
+
+## 2️⃣1️⃣ What is Protected Route?
+
+Restricts access based on auth.
+
+```jsx
+const PrivateRoute = ({ children }) => {
+  const isAuth = true;
+  return isAuth ? children : <Navigate to="/login" />;
+};
+```
+
+```jsx
+<Route path="/admin" element={
+  <PrivateRoute>
+    <Admin />
+  </PrivateRoute>
+} />
+```
+
+---
+
+## 2️⃣2️⃣ What is Navigate?
+
+Used for redirection.
+
+```jsx
+<Navigate to="/login" />
+```
+
+---
+
+## 2️⃣3️⃣ Redirect vs Navigate?
+
+❌ Redirect (removed)
+✅ Navigate (React Router v6)
+
+---
+
+## 2️⃣4️⃣ How to handle 404 Page?
+
+```jsx
+<Route path="*" element={<NotFound />} />
+```
+
+---
+
+## 2️⃣5️⃣ What is useSearchParams?
+
+Used for **query parameters**.
+
+```jsx
+const [params] = useSearchParams();
+params.get("q");
+```
+
+URL:
+
+```
+/search?q=react
+```
+
+---
+
+## 2️⃣6️⃣ Difference between Params & Query Params?
+
+| Params   | Query    |
+| -------- | -------- |
+| /user/1  | ?id=1    |
+| Required | Optional |
+
+---
+
+## 2️⃣7️⃣ Lazy Loading Routes?
+
+Improves performance.
+
+```jsx
+const Home = React.lazy(() => import("./Home"));
+
+<Suspense fallback={<Loader />}>
+  <Home />
+</Suspense>
+```
+
+---
+
+## 2️⃣8️⃣ What is Code Splitting in Routing?
+
+Loading route code **only when needed**.
+
+---
+
+## 2️⃣9️⃣ How does React Router work internally?
+
+* Uses History API
+* Listens to URL changes
+* Matches route tree
+
+---
+
+## 3️⃣0️⃣ Difference between React Router v5 & v6?
+
+| v5        | v6         |
+| --------- | ---------- |
+| Switch    | Routes     |
+| component | element    |
+| exact     | auto exact |
+
+---
+
+## 3️⃣1️⃣ What is exact in v6?
+
+❌ Not required
+Routes are **exact by default**
+
+---
+
+## 3️⃣2️⃣ Can we use multiple routers?
+
+❌ No (avoid nesting BrowserRouter)
+
+---
+
+## 3️⃣3️⃣ How to pass state during navigation?
+
+```jsx
+navigate("/profile", { state: { name: "Palash" } });
+```
+
+```jsx
+const location = useLocation();
+location.state.name;
+```
+
+---
+
+## 3️⃣4️⃣ What is basename?
+
+Used when app is deployed in subfolder.
+
+```jsx
+<BrowserRouter basename="/app">
+```
+
+---
+
+## 3️⃣5️⃣ Common Routing Mistakes
+
+❌ Using `<a>` instead of Link
+❌ Not handling 404
+❌ No lazy loading
+❌ Storing auth logic inside component
+
+---
+
+## 3️⃣6️⃣ Folder Structure (Recommended)
+
+```
+src/
+ ├── routes/
+ │    ├── AppRoutes.jsx
+ │    ├── PrivateRoute.jsx
+ ├── pages/
+ │    ├── Home.jsx
+ │    ├── Login.jsx
+```
+
+---
+
+## 3️⃣7️⃣ Can routing replace backend auth?
+
+❌ NO
+Frontend routing is **not security**
+
+---
+
+## 3️⃣8️⃣ Performance Optimization
+
+* Lazy routes
+* Avoid re-renders
+* Memoize layouts
+
+---
+
+## 3️⃣9️⃣ Interview One-Liner
+
+"React Router enables SPA navigation using URL-based routing without page reload."
+
+---
+
+## 4️⃣0️⃣ MUST-PRACTICE BEFORE INTERVIEW
+
+✅ Dynamic routes
+✅ Protected routes
+✅ Nested routes
+✅ useNavigate
+✅ useParams
+✅ Lazy loading
+
+---
+
+🎯 YOU ARE NOW INTERVIEW-READY FOR REACT ROUTING
