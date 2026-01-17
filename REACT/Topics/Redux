@@ -1,0 +1,362 @@
+# 🔵 REDUX INTERVIEW QUESTIONS (WITH ANSWERS & CODE)
+
+---
+
+## 1️⃣ What is Redux?
+
+Redux is a **state management library** used to manage **global application state** in a **predictable way**.
+
+👉 Used when multiple components need the same data.
+
+---
+
+## 2️⃣ Why do we need Redux?
+
+* Avoids **prop drilling**
+* Centralized state
+* Predictable data flow
+* Easier debugging with DevTools
+
+---
+
+## 3️⃣ What are the core principles of Redux?
+
+1. **Single source of truth** (one store)
+2. **State is read-only**
+3. **Changes via pure functions (reducers)**
+
+---
+
+## 4️⃣ What is a Store?
+
+Store holds the **entire state tree** of the app.
+
+```js
+import { createStore } from "redux";
+const store = createStore(reducer);
+```
+
+---
+
+## 5️⃣ What is an Action?
+
+Action is a **plain JS object** that describes **what happened**.
+
+```js
+const increment = {
+  type: "INCREMENT"
+};
+```
+
+---
+
+## 6️⃣ What is an Action Creator?
+
+A function that returns an action.
+
+```js
+const increment = () => ({
+  type: "INCREMENT"
+});
+```
+
+---
+
+## 7️⃣ What is a Reducer?
+
+Reducer is a **pure function** that updates state.
+
+```js
+const reducer = (state = { count: 0 }, action) => {
+  switch (action.type) {
+    case "INCREMENT":
+      return { count: state.count + 1 };
+    default:
+      return state;
+  }
+};
+```
+
+---
+
+## 8️⃣ What does "pure function" mean?
+
+* No side effects
+* Same input → same output
+* Does not mutate state
+
+❌ Wrong
+
+```js
+state.count++;
+```
+
+✅ Correct
+
+```js
+return { count: state.count + 1 };
+```
+
+---
+
+## 9️⃣ What is Dispatch?
+
+Dispatch sends an action to the reducer.
+
+```js
+store.dispatch(increment());
+```
+
+---
+
+## 🔟 What is useSelector?
+
+Reads data from Redux store.
+
+```js
+const count = useSelector(state => state.count);
+```
+
+---
+
+## 1️⃣1️⃣ What is useDispatch?
+
+Used to dispatch actions.
+
+```js
+const dispatch = useDispatch();
+dispatch(increment());
+```
+
+---
+
+## 1️⃣2️⃣ Redux Data Flow
+
+1. UI triggers action
+2. Action dispatched
+3. Reducer updates state
+4. UI re-renders
+
+➡️ One-way data flow
+
+---
+
+## 1️⃣3️⃣ What is Redux Toolkit (RTK)?
+
+Official, recommended way to use Redux
+Reduces boilerplate.
+
+---
+
+## 1️⃣4️⃣ createSlice Example (RTK)
+
+```js
+import { createSlice } from "@reduxjs/toolkit";
+
+const counterSlice = createSlice({
+  name: "counter",
+  initialState: { value: 0 },
+  reducers: {
+    increment: (state) => {
+      state.value += 1; // immer allows mutation
+    },
+    decrement: (state) => {
+      state.value -= 1;
+    }
+  }
+});
+
+export const { increment, decrement } = counterSlice.actions;
+export default counterSlice.reducer;
+```
+
+---
+
+## 1️⃣5️⃣ Why mutation works in RTK?
+
+RTK uses **Immer.js**
+It converts mutation into immutable updates.
+
+---
+
+## 1️⃣6️⃣ How to configure store?
+
+```js
+import { configureStore } from "@reduxjs/toolkit";
+import counterReducer from "./counterSlice";
+
+export const store = configureStore({
+  reducer: {
+    counter: counterReducer
+  }
+});
+```
+
+---
+
+## 1️⃣7️⃣ How to connect Redux with React?
+
+```js
+import { Provider } from "react-redux";
+
+<Provider store={store}>
+  <App />
+</Provider>
+```
+
+---
+
+## 1️⃣8️⃣ What is Thunk?
+
+Used for **async logic** (API calls).
+
+---
+
+## 1️⃣9️⃣ createAsyncThunk Example
+
+```js
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+
+export const fetchUsers = createAsyncThunk(
+  "users/fetch",
+  async () => {
+    const res = await fetch("https://jsonplaceholder.typicode.com/users");
+    return res.json();
+  }
+);
+
+const userSlice = createSlice({
+  name: "users",
+  initialState: { data: [], loading: false },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchUsers.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchUsers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload;
+      })
+      .addCase(fetchUsers.rejected, (state) => {
+        state.loading = false;
+      });
+  }
+});
+
+export default userSlice.reducer;
+```
+
+---
+
+## 2️⃣0️⃣ Redux vs Context API
+
+| Redux              | Context           |
+| ------------------ | ----------------- |
+| Global state       | Small state       |
+| Middleware support | No middleware     |
+| Better debugging   | Limited debugging |
+
+---
+
+## 2️⃣1️⃣ What is Middleware?
+
+Middleware sits between **dispatch → reducer**
+
+Example:
+
+* redux-thunk
+* redux-logger
+
+---
+
+## 2️⃣2️⃣ What is Redux DevTools?
+
+Used to:
+
+* Inspect state
+* Time travel
+* Debug actions
+
+---
+
+## 2️⃣3️⃣ When should you use Redux?
+
+✅ Use Redux when:
+
+* Large app
+* Shared global state
+* Complex updates
+
+❌ Avoid Redux when:
+
+* Small app
+* Local state only
+
+---
+
+## 2️⃣4️⃣ Difference between Redux & MobX?
+
+Redux → Predictable, boilerplate
+MobX → Less code, magic, auto tracking
+
+---
+
+## 2️⃣5️⃣ Common Redux Interview Traps
+
+* Mutating state ❌
+* Storing UI state globally ❌
+* Overusing Redux ❌
+
+---
+
+## 2️⃣6️⃣ Folder Structure (Recommended)
+
+```
+src/
+ ├── store/
+ │    ├── index.js
+ │    ├── userSlice.js
+ │    └── counterSlice.js
+```
+
+---
+
+## 2️⃣7️⃣ Can Redux replace backend?
+
+❌ NO
+Redux is client-side state only.
+
+---
+
+## 2️⃣8️⃣ Performance optimization in Redux
+
+* Use memoized selectors
+* Avoid large state
+* Normalize data
+
+---
+
+## 2️⃣9️⃣ What is Normalization?
+
+Storing data by ID instead of arrays.
+
+---
+
+## 3️⃣0️⃣ Final Interview Answer (One-liner)
+
+"Redux helps manage global state in a predictable, scalable, and debuggable way using actions, reducers, and a single store."
+
+---
+
+## ✅ MOST IMPORTANT TO PRACTICE
+
+* createSlice
+* useSelector
+* useDispatch
+* createAsyncThunk
+* Avoid mutation
+* Redux vs Context
+
+---
+
+🎯 YOU ARE INTERVIEW-READY FOR REDUX

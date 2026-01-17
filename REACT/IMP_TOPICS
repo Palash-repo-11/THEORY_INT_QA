@@ -13,12 +13,13 @@ Forms & controlled vs uncontrolled components
 🔹 Hooks (Very Important ⭐)
 
 useState
-useEffect (dependency array, cleanup)
+useEffect (dependency array, cleanup) ✅
 useContext
 useRef
 useMemo
 useCallback
 useReducer
+useFrom
 Custom Hooks (why & how)
 Rules of Hooks
 
@@ -36,7 +37,7 @@ Cleanup in useEffect
 Lifting state up
 Prop drilling & its problems
 Context API
-Redux basics (store, action, reducer)
+Redux basics (store, action, reducer) ✅
 Redux Toolkit
 When to use Context vs Redux
 Local state vs global state
@@ -50,13 +51,13 @@ useMemo vs useCallback
 Avoiding unnecessary re-renders
 Virtual DOM vs Real DOM
 Reconciliation
-Lazy loading (React.lazy, Suspense)
-Code splitting
+Lazy loading (React.lazy, Suspense)  ✅
+Code splitting  ✅
 
 
 🔹 Routing
 
-React Router (BrowserRouter, Routes, Route)\
+React Router (BrowserRouter, Routes, Route)
 Dynamic routes
 Route params & query params
 Protected routes
@@ -74,6 +75,7 @@ Validation strategies
 🔹 API & Data Handling
 
 Fetching data (fetch, axios)
+React query
 Handling loading & error states
 useEffect with API calls
 Pagination & infinite scroll
@@ -145,3 +147,14 @@ Controlled forms
 Context vs Redux
 React Router
 Virtual DOM & reconciliation
+
+
+
+⭐ additional
+
+localStorage 
+session storage
+indexDb
+websocket
+notification
+CDN
