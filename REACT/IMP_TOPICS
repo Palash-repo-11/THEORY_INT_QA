@@ -46,7 +46,7 @@ Local state vs global state
 🔹 Performance Optimization (High-Value Topic 🚀)
 
 React re-rendering behavior
-React.memo
+React.memo ✅
 useMemo vs useCallback
 Avoiding unnecessary re-renders
 Virtual DOM vs Real DOM
@@ -57,7 +57,7 @@ Code splitting  ✅
 
 🔹 Routing
 
-React Router (BrowserRouter, Routes, Route)
+React Router (BrowserRouter, Routes, Route) ✅
 Dynamic routes
 Route params & query params
 Protected routes

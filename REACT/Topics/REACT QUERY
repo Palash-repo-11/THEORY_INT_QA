@@ -1,0 +1,365 @@
+# 🔵 REACT QUERY (TanStack Query) – INTERVIEW QUESTIONS WITH ANSWERS & CODE
+
+---
+
+## 1️⃣ What is React Query?
+
+React Query (TanStack Query) is a **server-state management library** for React.
+
+➡️ It handles **fetching, caching, syncing, and updating server data** automatically.
+
+---
+
+## 2️⃣ Server State vs Client State
+
+| Server State          | Client State            |
+| --------------------- | ----------------------- |
+| Data from API         | UI state (modal, theme) |
+| Async                 | Sync                    |
+| Can change externally | Controlled by app       |
+
+👉 React Query manages **server state**.
+
+---
+
+## 3️⃣ Why do we need React Query?
+
+* No manual loading/error state
+* Automatic caching
+* Background refetching
+* Request deduplication
+* Better than Redux for API state
+
+---
+
+## 4️⃣ React Query vs Redux
+
+| React Query      | Redux               |
+| ---------------- | ------------------- |
+| Server state     | Client/global state |
+| Less boilerplate | More boilerplate    |
+| Auto caching     | Manual handling     |
+
+---
+
+## 5️⃣ Core Concepts of React Query
+
+* Query
+* Query Key
+* Query Cache
+* Mutation
+* Invalidation
+
+---
+
+## 6️⃣ Installation
+
+```bash
+npm install @tanstack/react-query
+```
+
+---
+
+## 7️⃣ Setup QueryClient
+
+```jsx
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MyApp />
+    </QueryClientProvider>
+  );
+}
+```
+
+---
+
+## 8️⃣ What is useQuery?
+
+`useQuery` is used to **fetch and cache data**.
+
+```js
+useQuery({ queryKey, queryFn })
+```
+
+---
+
+## 9️⃣ Basic useQuery Example
+
+```js
+import { useQuery } from "@tanstack/react-query";
+
+function Users() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["users"],
+    queryFn: () =>
+      fetch("https://jsonplaceholder.typicode.com/users").then(res => res.json())
+  });
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error</p>;
+
+  return data.map(u => <p key={u.id}>{u.name}</p>);
+}
+```
+
+---
+
+## 🔟 What is queryKey?
+
+A **unique identifier** for cached data.
+
+```js
+["users", userId]
+```
+
+---
+
+## 1️⃣1️⃣ Why queryKey is important?
+
+* Caching
+* Refetching
+* Invalidation
+
+---
+
+## 1️⃣2️⃣ Dynamic Queries Example
+
+```js
+useQuery({
+  queryKey: ["user", id],
+  queryFn: () => fetch(`/api/user/${id}`).then(res => res.json())
+});
+```
+
+---
+
+## 1️⃣3️⃣ What is enabled option?
+
+Used to **conditionally run query**.
+
+```js
+useQuery({
+  queryKey: ["user", id],
+  queryFn,
+  enabled: !!id
+});
+```
+
+---
+
+## 1️⃣4️⃣ What is staleTime?
+
+Time data is considered **fresh**.
+
+```js
+staleTime: 1000 * 60 // 1 minute
+```
+
+---
+
+## 1️⃣5️⃣ What is cacheTime?
+
+How long unused cache stays.
+
+```js
+cacheTime: 1000 * 60 * 5
+```
+
+---
+
+## 1️⃣6️⃣ Background Refetching
+
+Refetches when:
+
+* Window focus
+* Network reconnect
+
+---
+
+## 1️⃣7️⃣ What is useMutation?
+
+Used for **POST, PUT, DELETE** (write operations).
+
+```js
+useMutation({ mutationFn })
+```
+
+---
+
+## 1️⃣8️⃣ Basic useMutation Example
+
+```js
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+function AddUser() {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (user) =>
+      fetch("/api/users", {
+        method: "POST",
+        body: JSON.stringify(user)
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["users"]);
+    }
+  });
+
+  return (
+    <button onClick={() => mutation.mutate({ name: "Palash" })}>
+      Add User
+    </button>
+  );
+}
+```
+
+---
+
+## 1️⃣9️⃣ Why invalidateQueries?
+
+To **refetch fresh data** after mutation.
+
+---
+
+## 2️⃣0️⃣ Mutation Lifecycle
+
+* onMutate
+* onSuccess
+* onError
+* onSettled
+
+---
+
+## 2️⃣1️⃣ Optimistic Update Example
+
+```js
+useMutation({
+  mutationFn: addTodo,
+  onMutate: async (newTodo) => {
+    await queryClient.cancelQueries(["todos"]);
+
+    const previousTodos = queryClient.getQueryData(["todos"]);
+
+    queryClient.setQueryData(["todos"], old => [...old, newTodo]);
+
+    return { previousTodos };
+  },
+  onError: (err, newTodo, context) => {
+    queryClient.setQueryData(["todos"], context.previousTodos);
+  },
+  onSettled: () => {
+    queryClient.invalidateQueries(["todos"]);
+  }
+});
+```
+
+---
+
+## 2️⃣2️⃣ useQuery vs useMutation
+
+| useQuery | useMutation     |
+| -------- | --------------- |
+| GET      | POST/PUT/DELETE |
+| Auto run | Manual trigger  |
+| Cached   | Not cached      |
+
+---
+
+## 2️⃣3️⃣ Error Handling in React Query
+
+```js
+useQuery({
+  queryKey,
+  queryFn,
+  retry: 2
+});
+```
+
+---
+
+## 2️⃣4️⃣ Pagination Example
+
+```js
+useQuery({
+  queryKey: ["users", page],
+  queryFn: () => fetch(`/api/users?page=${page}`).then(r => r.json()),
+  keepPreviousData: true
+});
+```
+
+---
+
+## 2️⃣5️⃣ Parallel Queries
+
+```js
+useQueries({
+  queries: [
+    { queryKey: ["users"], queryFn: fetchUsers },
+    { queryKey: ["posts"], queryFn: fetchPosts }
+  ]
+});
+```
+
+---
+
+## 2️⃣6️⃣ React Query DevTools
+
+```bash
+npm install @tanstack/react-query-devtools
+```
+
+---
+
+## 2️⃣7️⃣ When NOT to use React Query?
+
+* UI state
+* Form state
+* Local state
+
+---
+
+## 2️⃣8️⃣ Common Mistakes
+
+❌ Using Redux for API calls
+❌ Not using queryKey properly
+❌ Forgetting invalidation
+
+---
+
+## 2️⃣9️⃣ Interview One-Liner
+
+"React Query efficiently manages server state by handling caching, background updates, and mutations with minimal code."
+
+---
+
+## 3️⃣0️⃣ MUST PRACTICE BEFORE INTERVIEW
+
+✅ useQuery
+✅ useMutation
+✅ queryKey
+✅ invalidateQueries
+✅ optimistic updates
+
+---
+
+## 🎯 YOU ARE NOW STRONG IN:
+
+🔥 Server-state management
+🔥 API performance
+🔥 Modern React data fetching
+
+---
+
+If you want next (recommended):
+
+* ⚡ **RTK Query vs React Query**
+* ⚡ **React Query advanced patterns**
+* ⚡ **Caching & invalidation scenarios**
+* ⚡ **Senior frontend interview questions**
+
+Just tell me 👍
