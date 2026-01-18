@@ -1,0 +1,135 @@
+🧠 SYSTEM DESIGN MASTER ROADMAP
+
+🟢 PHASE 1: Foundations (VERY IMPORTANT)
+
+1️⃣ What is System Design?
+
+Functional vs Non-Functional requirements
+Scalability, Reliability, Availability
+Latency vs Throughput
+CAP theorem (with real examples)
+Vertical vs Horizontal scaling
+
+👉 Goal: Think like an architect, not a coder.
+
+2️⃣ Networking Basics (Interview Gold)
+
+HTTP vs HTTPS
+REST vs GraphQL vs gRPC
+TCP vs UDP
+WebSockets vs Long Polling
+CDN (Cloudflare, Akamai)
+
+3️⃣ Load Handling
+
+Load Balancers (L4 vs L7)
+Reverse Proxy (Nginx)
+Rate Limiting (Token bucket, Leaky bucket)
+Throttling vs Quotas
+
+🟡 PHASE 2: Data Layer (Most Asked)
+
+4️⃣ Databases (Deep Dive)
+
+SQL vs NoSQL
+MySQL vs PostgreSQL
+MongoDB, DynamoDB
+When to use which?
+ACID vs BASE
+Indexing (B-Tree, Hash Index)
+
+5️⃣ Data Scaling Techniques
+
+Sharding (range, hash, directory)
+Replication (master-slave, multi-master)
+Read replicas
+Hot partitions problem
+
+6️⃣ Caching
+
+Redis vs Memcached
+Cache-aside vs Write-through
+Cache eviction (LRU, LFU)
+Cache invalidation problems
+
+“There are only two hard things in CS…”
+
+🟠 PHASE 3: Backend Architecture
+
+7️⃣ Monolith vs Microservices
+
+Pros & cons
+When NOT to use microservices
+Service communication
+API Gateway
+
+8️⃣ Async Processing
+
+Message Queues (RabbitMQ, Kafka, SQS)
+Event-driven architecture
+Exactly-once vs at-least-once
+Background jobs & cron
+
+9️⃣ File & Media Systems
+
+Object storage (S3)
+Upload/download architecture
+Video streaming basics
+Chunked uploads
+
+🔵 PHASE 4: Reliability & Scale
+
+🔟 High Availability
+
+Failover strategies
+Health checks
+Circuit Breaker
+Bulkhead pattern
+
+1️⃣1️⃣ Consistency & Distributed Systems
+
+CAP theorem (real case)
+Strong vs Eventual consistency
+Distributed locks
+Idempotency
+
+1️⃣2️⃣ Security
+
+Authentication vs Authorization
+JWT vs Session
+OAuth 2.0
+Rate limiting & DDOS protection
+
+🔴 PHASE 5: System Design Interviews
+
+1️⃣3️⃣ Design Large Systems
+
+We’ll design from scratch:
+URL Shortener
+Instagram
+YouTube
+WhatsApp
+Uber
+Google Drive
+Notification system
+Search autocomplete
+
+Each design will include:
+✔ API design
+✔ DB schema
+✔ Scaling strategy
+✔ Bottleneck analysis
+
+🧪 PHASE 6: Real-World Practice (Optional)
+
+Design using Node.js + Redis + Kafka
+Draw architecture mentally (or on paper)
+Convert designs into backend services
+
+🛠️ Tools You Should Know
+
+Redis
+Kafka
+Nginx
+AWS basics (EC2, S3, RDS)
+Docker (highly recommended)

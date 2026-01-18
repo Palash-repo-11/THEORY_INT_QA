@@ -1,0 +1,304 @@
+1️⃣ What is System Design?
+----
+🔹 Simple Definition
+System Design is the process of defining the architecture, components, data flow, and trade-offs of a system that solves a problem at scale.
+
+👉 Not about writing code, but about:
+How systems communicate
+How data is stored
+How the system handles millions of users
+How it fails and recovers
+
+🧠 Think Like an Architect (Mindset Shift)
+
+| Coder Thinks            | Architect Thinks        |
+| ----------------------- | ----------------------- |
+| How to write a function | How services interact   |
+| How to optimize logic   | How to scale traffic    |
+| How to fix bugs         | How to prevent failures |
+| One user                | Millions of users       |
+
+2️⃣ Functional vs Non-Functional Requirements
+----
+    This is ALWAYS the first interview step.
+
+✅ Functional Requirements (WHAT the system does)
+   ➡️ Features the system must provide
+Examples:
+   ⏺️ User can sign up / login
+   ⏺️ User can upload images
+   ⏺️ User can send messages
+   ⏺️ User can like a post
+
+📌 If you remove it → product is broken.
+
+⚙️ Non-Functional Requirements (HOW WELL it works)
+   ➡️ Quality attributes of the system
+
+Core Non-Functional Requirements:
+    ⏺️ Scalability
+    ⏺️ Availability
+    ⏺️ Reliability
+    ⏺️ Performance
+    ⏺️ Security
+    ⏺️ Consistency
+
+📌 If you remove these → product works but badly
+
+🧩 Example: Instagram
+Functional ---
+    ⏺️ Upload photos
+    ⏺️ Like, comment
+    ⏺️ Follow users
+
+Non-Functional ---
+    ⏺️ Loads fast (< 200ms)
+    ⏺️ 99.99% uptime
+    ⏺️ Handles millions of users
+    ⏺️ Images always available
+
+💡 Interview Tip:
+Always say:
+    “Let me clarify functional and non-functional requirements first.”
+
+
+3️⃣ Scalability, Reliability, Availability
+----
+These are often confused—let’s separate them clearly.
+
+📈 Scalability
+    Ability to handle growth (users, traffic, data)
+
+Example:
+    ⏺️ 1K users today
+    ⏺️ 10M users tomorrow
+    ⏺️ System still works without rewriting everything
+
+Types:
+   ⏺️ Traffic scalability
+   ⏺️ Data scalability
+   ⏺️ User scalability
+📌 Scaling ≠ Performance optimization
+
+🛡️ Reliability
+    System works correctly over time
+
+Means:
+   ⏺️ No data loss
+   ⏺️ Correct responses
+   ⏺️ Same request → same result
+
+Example:
+   ⏺️ Payment deducted once
+   ⏺️ Messages not duplicated
+
+📌 A fast system that gives wrong data is unreliable
+
+🟢 Availability
+    System is accessible when users need it
+
+Measured as:
+    ⏺️ 99.9% → ~8.7 hrs downtime/year
+    ⏺️ 99.99% → ~52 min/year
+
+Example:
+   ⏺️ WhatsApp opens even during peak load
+
+📌 A system can be available but unreliable
+(returns errors but still “up”)
+
+🧠 Key Difference (Very Important) ----
+| Concept      | Question it answers |
+| ------------ | ------------------- |
+| Scalability  | Can it grow?        |
+| Reliability  | Is it correct?      |
+| Availability | Is it up?           |
+
+4️⃣ Latency vs Throughput 
+-----
+    This is performance thinking.
+
+⏱️ Latency
+    Time taken for ONE request
+
+Example:
+   ⏺️ API response time = 120ms
+   ⏺️ Page load time = 300ms
+
+📌 User experience metric
+
+🚀 Throughput
+    Number of requests handled per unit time
+
+Example:
+   ⏺️ 10,000 requests/second
+   ⏺️ 1 million messages/minute
+
+📌 System capacity metric
+
+🧩 Real Example: Toll Booth
+   ⏺️ Latency → Time one car takes to pass
+   ⏺️ Throughput → Cars per hour
+
+👉 Add more booths:
+   ⏺️ Latency ↓
+   ⏺️ Throughput ↑
+
+⚠️ Trade-off
+   ⏺️ Low latency ≠ high throughput
+   ⏺️ High throughput systems often batch requests
+
+5️⃣ CAP Theorem (Interview Favorite)
+    In a distributed system, you can only guarantee 2 of 3:
+
+🔺 CAP
+   ⏺️ C – Consistency
+   ⏺️ A – Availability
+   ⏺️ P – Partition Tolerance
+
+🧠 Definitions (Clear & Simple)
+Consistency
+   ⏺️ All nodes return same data
+   ⏺️ Latest write visible everywhere
+Availability
+   ⏺️ Every request gets a response
+   ⏺️ Even if data is stale
+Partition Tolerance
+   ⏺️ System works even if network fails
+   ⏺️ Messages lost or delayed between nodes
+
+📌 P is mandatory in distributed systems.
+
+❗ Reality
+You choose between:
+   ⏺️ CP (Consistency + Partition)
+   ⏺️ AP (Availability + Partition)
+
+🧩 Real Examples
+🏦 Banking System → CP
+   ⏺️ Wrong balance = disaster
+   ⏺️ Might reject request if unsure
+📱 Social Media → AP
+   ⏺️ Feed can be slightly stale
+   ⏺️ App must always load
+⚠️ Interview Line
+    “In real systems, CAP is not binary—it’s a spectrum.”
+
+
+6️⃣ Vertical vs Horizontal Scaling
+-----
+🏗️ Vertical Scaling (Scale UP)
+        ➡️ Increase power of one machine
+   ⏺️ Add RAM
+   ⏺️ Add CPU
+   ⏺️ Bigger server
+
+Pros
+    ✔ Simple
+    ✔ No code change
+Cons
+    ❌ Hardware limit
+    ❌ Single point of failure
+
+🌐 Horizontal Scaling (Scale OUT)
+         ➡️ Add more machines
+   ⏺️ Multiple servers
+   ⏺️ Load balancer
+
+Pros
+    ✔ High availability
+    ✔ Infinite scaling
+Cons
+    ❌ Complex
+    ❌ Needs stateless design
+
+🧩 Real World
+   ⏺️ Startups → Vertical
+   ⏺️ Big tech → Horizontal
+
+🧠 Architect Thinking Summary
+When given a system:
+   1> Identify functional requirements
+   2> Define non-functional goals
+   3> Decide CAP preference
+   4> Plan scaling strategy
+   5> Accept trade-offs
+
+
+✅ Mini Exercise (IMPORTANT)
+Answer this in 2–3 lines:
+   ➡️ Design a URL shortener – what are 2 functional and 2 non-functional requirements?
+------
+🔗 What is a URL Shortener?
+🔹 Simple Definition
+   ➡️ A URL shortener is a system that converts a long URL into a short, unique URL, which redirects users to the original long URL when accessed.
+
+🧩 Example
+Long URL
+    https://www.amazon.in/gp/product/B0C9X9Y7KQ/ref=something-very-long
+Short URL
+    https://bit.ly/3Xk9PqA
+
+👉 When a user opens the short URL, the system:
+   ⏺️ Receives the request
+   ⏺️ Finds the original long URL
+   ⏺️ Redirects the user to it
+
+🧠 Why Do We Need URL Shorteners?
+1️⃣ Convenience
+   ⏺️ Easy to share
+   ⏺️ Fits in messages, tweets, QR codes
+2️⃣ Tracking & Analytics
+   ⏺️ Click count
+   ⏺️ Location
+   ⏺️ Device
+   ⏺️ Time of access
+3️⃣ Branding
+   ⏺️ Custom domains
+   ⏺️ amzn.to, bit.ly, t.co
+
+🧩 Real-World Examples
+   ⏺️ Bitly
+   ⏺️ TinyURL
+   ⏺️ Google URL Shortener (deprecated)
+   ⏺️ t.co (Twitter/X)
+
+🔄 How a URL Shortener Works (High Level Flow)
+    User → Shorten URL API → Generate unique key → Store mapping → Return short URL
+
+    User → Open short URL → Lookup key → Get long URL → Redirect (301/302)
+
+🧱 Core Components (Very High Level)
+
+1> API Server
+   ⏺️ Accepts long URLs
+   ⏺️ Handles redirects
+2> Database
+   ⏺️ Stores:
+        short_key → long_url
+3> Redirect Service
+   ⏺️ Extremely fast
+   ⏺️ Read-heavy system
+4> Optional
+   ⏺️ Cache (Redis)
+   ⏺️ Analytics service
+
+🧠 Now Answer the Original Question Properly
+🔹 Functional Requirements (WHAT it does)
+   1> Generate a short URL for a given long URL
+   2> Redirect users from short URL → original URL
+(Advanced optional)
+   ⏺️ Custom aliases
+   ⏺️ Expiry time
+   ⏺️ Click tracking
+
+⚙️ Non-Functional Requirements (HOW WELL it works)
+    1>Low latency redirects (< 50 ms)
+    2>High availability (always accessible)
+(Advanced)
+   ⏺️ Scalable to billions of URLs
+   ⏺️ Durable storage
+   ⏺️ No collisions
+
+🎯 Interview-Ready Definition (Say This)
+    “A URL shortener is a service that maps long URLs to short unique identifiers and redirects incoming requests to the original URL with low latency, high availability, and massive read scalability.”
