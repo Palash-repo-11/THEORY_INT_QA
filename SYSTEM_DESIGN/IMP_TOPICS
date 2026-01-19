@@ -18,6 +18,7 @@ HTTP vs HTTPS
 REST vs GraphQL vs gRPC
 TCP vs UDP
 WebSockets vs Long Polling
+WebHook
 CDN (Cloudflare, Akamai)
 
 3️⃣ Load Handling

@@ -1,0 +1,278 @@
+1️⃣ Client–Server Model
+-----
+What is a Client?
+   ⏺️ Browser (Chrome)
+   ⏺️ Mobile app
+   ⏺️ Postman
+What is a Server?
+   ⏺️ Backend application
+   ⏺️ Database
+   ⏺️ CDN edge server
+Flow---
+   ➡️ Client → Request → Server
+   ➡️ Client ← Response ← Server
+
+📌 System design = designing this communication at scale.
+
+2️⃣ IP Address & Ports
+------
+🌐 IP Address & Port (DETAILED)
+1️⃣ What is an IP Address?
+----
+🔹 Simple Definition
+  ➡️  An IP address is a unique logical address assigned to a device on a network so other devices can find and communicate with it.
+
+Think of it as:
+House address 📍 for a device
+
+Without IP:
+❌ No communication
+❌ Internet cannot work
+
+2️⃣ Why Do We Need IP Addresses?
+----
+When you send a request:
+    Browser → Server
+
+The internet must know:
+   ⏺️ Where to send the request
+   ⏺️ Where to send the response back
+
+👉 IP solves this.
+
+3️⃣ Types of IP Addresses
+-----
+IPv4 (Most Common) ----
+   ⏺️ 32-bit address
+   ⏺️ Written in dotted decimal
+       ➡️ 192.168.1.1
+Range ➡️ 0.0.0.0  → 255.255.255.255
+Total ➡️ 2³² ≈ 4.3 billion addresses
+📌 Problem: Not enough IPs
+
+IPv6 (Modern) ----
+   ⏺️ 128-bit address
+   ⏺️ Hexadecimal
+        ➡️ 2001:0db8:85a3::8a2e:0370:7334
+Benefits
+    ✔ Huge address space
+    ✔ Better routing
+    ✔ No NAT required
+📌 Still slow adoption
+
+4️⃣ Public IP vs Private IP (VERY IMPORTANT) ----
+🌍 Public IP
+   ⏺️ Used on the internet
+   ⏺️ Globally unique
+   ⏺️ Assigned by ISP
+Example: 142.250.183.14 (Google)
+
+🏠 Private IP
+   ⏺️ Used inside local networks
+   ⏺️ NOT accessible from internet
+
+Reserved Private Ranges:
+    10.0.0.0     – 10.255.255.255
+    172.16.0.0   – 172.31.255.255
+    192.168.0.0  – 192.168.255.255
+Example:
+    ➡️ 192.168.1.1
+📌 Your laptop, phone, TV use private IPs.
+
+5️⃣ NAT (Network Address Translation) -------
+🔹 What is NAT?
+    ➡️ NAT is a networking technique that allows multiple devices in a private network to access the internet using one public IP address.
+
+👉 It translates private IP addresses → public IP address and vice-versa.
+
+🔹 Why NAT is needed?
+   ⏺️ IPv4 addresses are limited
+   ⏺️ Internal (private) IPs are not routable on the internet
+   ⏺️ Adds a basic layer of security
+   ⏺️ Saves cost (one public IP for many devices)
+
+🔹 How NAT works (simple flow)
+        Laptop (192.168.1.10)
+                ↓
+        Router (NAT)
+                ↓
+        Public IP (103.xx.xx.xx)
+                ↓
+        Internet
+
+When the response comes back, NAT maps it back to:
+    103.xx.xx.xx → 192.168.1.10
+    ➡️ Private IP + Port → Public IP + Port
+
+6️⃣ Port – Simple Definition --------
+    A port identifies a specific application or service running on a machine.
+If IP is:
+    Apartment building
+Port is:
+    Flat number
+
+7️⃣ Why Do We Need Ports? ------
+One machine:
+   ⏺️ Runs browser
+   ⏺️ Runs backend server
+   ⏺️ Runs database
+   ⏺️ Runs SSH
+All use same IP, so:
+    👉 Port tells which app should receive the request
+
+8️⃣ Port Range -----
+    | Range       | Meaning               |
+    | ----------- | --------------------- |
+    | 0–1023      | Well-known ports      |
+    | 1024–49151  | Registered            |
+    | 49152–65535 | Ephemeral (temporary) |
+
+Common Ports (Interview Must) -----
+    | Port  | Service    |
+    | ----- | ---------- |
+    | 80    | HTTP       |
+    | 443   | HTTPS      |
+    | 22    | SSH        |
+    | 21    | FTP        |
+    | 3306  | MySQL      |
+    | 5432  | PostgreSQL |
+    | 6379  | Redis      |
+    | 27017 | MongoDB    |
+
+9️⃣ IP + Port = Socket  ---
+Example:
+    142.250.183.14:443
+Means:
+   ⏺️ IP → Google server
+   ⏺️ Port → HTTPS service
+
+📌 This pair uniquely identifies a connection endpoint.
+
+🔄 Real Request Example (Very Important) ---
+When you open:
+    https://google.com
+Internally:
+    1> DNS → 142.250.183.14
+    2> Browser connects to: 142.250.183.14:443
+    3> HTTPS server responds
+
+3️⃣ DNS (Domain Name System)----
+    What DNS Does
+       ➡️ Converts domain name → IP address
+        google.com → 142.250.183.14
+Why DNS Matters in System Design
+   ⏺️ Load balancing
+   ⏺️ Failover
+   ⏺️ Geo-routing
+Types of DNS
+   ⏺️ A Record → IP
+   ⏺️ CNAME → Alias
+   ⏺️ MX → Mail
+
+📌 DNS lookup adds latency (~20–100ms)
+
+4️⃣ Request–Response Lifecycle (Very Important) ---
+When you open https://example.com:
+    1> DNS lookup
+    2> TCP handshake
+    3> TLS handshake
+    4> HTTP request
+    5> Server processing
+    6> Response sent
+    7> Browser renders
+👉 Every step adds latency
+
+
+🟡 PART 2️⃣ – HTTP / HTTPS (Deep Dive) ---------
+
+5️⃣ HTTP is Stateless (Critical Concept) -----
+    Server does NOT remember previous requests.
+Implications
+   ⏺️ Session stored in:
+       ⏺️ Cookies
+       ⏺️ Redis
+       ⏺️ JWT
+
+📌 Stateless = scalable
+
+6️⃣ HTTP Headers (Very Important) ---
+Request Headers
+   ⏺️ Authorization
+   ⏺️ Content-Type
+   ⏺️ User-Agent
+   ⏺️ Accept
+Response Headers
+   ⏺️ Cache-Control
+   ⏺️ Set-Cookie
+   ⏺️ ETag
+   ⏺️ CORS headers
+📌 Headers control security, caching, performance
+
+7️⃣ HTTP Status Codes (Interview Must) ----
+    | Code | Meaning             |
+    | ---- | ------------------- |
+    | 200  | OK                  |
+    | 201  | Created             |
+    | 301  | Permanent redirect  |
+    | 302  | Temporary redirect  |
+    | 400  | Bad request         |
+    | 401  | Unauthorized        |
+    | 403  | Forbidden           |
+    | 404  | Not found           |
+    | 429  | Too many requests   |
+    | 500  | Server error        |
+    | 503  | Service unavailable |
+📌 URL shortener uses 301 / 302
+
+8️⃣ HTTPS & TLS Handshake (Advanced but Important) ----
+Steps
+   1> Client hello
+   2> Server certificate
+   3> Key exchange
+   4> Encrypted communication
+Why It Matters
+   5> Authentication
+   6> Encryption
+   7> Trust
+
+📌 TLS handshake is expensive → reuse connections
+
+9️⃣ HTTP/1.1 vs HTTP/2 vs HTTP/3 ----
+HTTP/1.1
+   ⏺️ One request per connection
+   ⏺️ Head-of-line blocking
+HTTP/2
+   ⏺️ Multiplexing
+   ⏺️ Header compression
+   ⏺️ Faster page loads
+HTTP/3
+   ⏺️ Built on QUIC (UDP)
+   ⏺️ Faster handshakes
+   ⏺️ Used by YouTube, Google
+
+📌 CDN + HTTP/2/3 = massive performance boost
+
+🟠 PART 3️⃣ – API Communication Styles
+(Preview – we’ll deep dive next)
+   ⏺️ REST
+   ⏺️ GraphQL
+   ⏺️ gRPC
+   ⏺️ Versioning
+   ⏺️ Backward compatibility
+
+🔵 PART 4️⃣ – Real-Time Communication---
+(Preview)
+   ⏺️ Polling
+   ⏺️ Long polling
+   ⏺️ WebSockets
+   ⏺️ Server-Sent Events
+   ⏺️ Scaling WebSockets
+
+🔴 PART 5️⃣ – Networking at Scale (Advanced)
+(Preview)
+   ⏺️ Load balancers (L4 vs L7)
+   ⏺️ Reverse proxies
+   ⏺️ CDN internals
+   ⏺️ Rate limiting
+   ⏺️ DDoS protection
+
