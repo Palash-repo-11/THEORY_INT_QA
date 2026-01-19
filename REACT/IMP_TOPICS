@@ -47,7 +47,7 @@ Local state vs global state
 
 React re-rendering behavior
 React.memo ✅
-useMemo vs useCallback
+useMemo vs useCallback  ✅
 Avoiding unnecessary re-renders
 Virtual DOM vs Real DOM
 Reconciliation

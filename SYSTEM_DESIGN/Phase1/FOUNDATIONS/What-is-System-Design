@@ -108,11 +108,11 @@ Example:
 (returns errors but still “up”)
 
 🧠 Key Difference (Very Important) ----
-| Concept      | Question it answers |
-| ------------ | ------------------- |
-| Scalability  | Can it grow?        |
-| Reliability  | Is it correct?      |
-| Availability | Is it up?           |
+    | Concept      | Question it answers |
+    | ------------ | ------------------- |
+    | Scalability  | Can it grow?        |
+    | Reliability  | Is it correct?      |
+    | Availability | Is it up?           |
 
 4️⃣ Latency vs Throughput 
 -----
