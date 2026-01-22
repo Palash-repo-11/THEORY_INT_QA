@@ -148,3 +148,74 @@ Types
 
 📌 Cache reduces load exponentially
 
+1️⃣1️⃣ Asynchronous Load Handling --
+Problem
+    ⏺️ Synchronous processing blocks server
+
+Solution → Queues
+    ➡️ Client → API → Queue → Worker
+
+Examples
+    ⏺️ Email sending
+    ⏺️ Video processing
+    ⏺️ Report generation
+Tools:
+    ⏺️ RabbitMQ
+    ⏺️ Kafka
+    ⏺️ SQS
+
+1️⃣2️⃣ Auto Scaling --
+🔹 Horizontal Auto Scaling
+   ⏺️ Add/remove servers based on:
+       ⏺️ CPU
+       ⏺️ Memory
+       ⏺️ RPS
+📌 Cloud-native feature
+
+🔹 Vertical Scaling
+   ⏺️ Increase server size
+    ❌ Limited
+    ❌ Expensive
+
+1️⃣3️⃣ Backpressure (Advanced Concept) ---
+    ➡️ System signals clients to slow down
+
+Techniques
+   ⏺️ 429 Too Many Requests
+   ⏺️ Queue limits
+   ⏺️ Circuit breakers
+
+1️⃣4️⃣ Load Handling in Real Systems ---
+
+Example: URL Shortener
+    | Component    | Strategy    |
+    | ------------ | ----------- |
+    | Redirect API | CDN + Cache |
+    | Write API    | Rate limit  |
+    | DB           | Sharding    |
+    | Analytics    | Async queue |
+
+Example: Instagram
+   ⏺️ CDN for media
+   ⏺️ L7 load balancer
+   ⏺️ Redis for cache
+   ⏺️ Kafka for async tasks
+
+
+🧠 Architect Thinking Checklist
+When designing load handling:
+   1> Where is traffic highest?
+   2> Read-heavy or write-heavy?
+   3> Can it be cached?
+   4> Can it be async?
+   5> What happens on overload?
+
+
+🎯 Interview-Ready Summary
+📋 “Load handling is achieved through a combination of load balancing, caching, rate limiting, asynchronous processing, and auto-scaling. A well-designed system distributes traffic, prevents overload, and degrades gracefully under extreme load.”
+
+
+✅ Quick Exercise (Important)
+Answer this:
+    A login API is getting brute-force attacks.
+    Which 3 load-handling techniques will you apply and where?
