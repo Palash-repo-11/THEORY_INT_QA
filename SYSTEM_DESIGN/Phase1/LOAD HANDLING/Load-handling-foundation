@@ -1,0 +1,150 @@
+🧠 LOAD HANDLING (DETAILED SYSTEM DESIGN GUIDE)
+
+1️⃣ What is Load?
+
+🔹 Simple Definition
+   ➡️ Load is the amount of work a system must handle at a given time.
+
+Examples of Load
+   ⏺️ Number of users
+   ⏺️ Requests per second (RPS)
+   ⏺️ Concurrent connections
+   ⏺️ Data volume (MB/GB)
+
+📊 Example
+   ⏺️ 100 users → low load
+   ⏺️ 1 million users → high load
+📌 Load ≠ Traffic only
+It also includes:
+   ⏺️ DB queries
+   ⏺️ CPU usage
+   ⏺️ Memory
+   ⏺️ Network bandwidth
+
+2️⃣ Why Load Handling is Critical 
+    If load is not handled properly:
+        ❌ Server crashes
+        ❌ Slow response
+        ❌ Timeouts
+        ❌ Data inconsistency
+    👉 Good systems fail gracefully
+
+3️⃣ Load Handling Strategies (High Level)
+        Client
+        ↓
+        Load Balancer
+        ↓
+        Multiple Servers
+        ↓
+        Cache / DB / Queue
+
+Key techniques:
+   ⏺️ Load balancing
+   ⏺️ Caching
+   ⏺️ Rate limiting
+   ⏺️ Asynchronous processing
+   ⏺️ Auto-scaling
+   ⏺️ Backpressure
+
+4️⃣ Load Balancers (Core Concept)--
+🔹 What is a Load Balancer?
+   ➡️ A load balancer (LB) distributes incoming traffic across multiple backend servers.
+
+Why We Need It :
+   ⏺️ Avoid single point of failure
+   ⏺️ Improve performance
+   ⏺️ Enable horizontal scaling
+
+5️⃣ Types of Load Balancers ---
+
+🟦 L4 Load Balancer (Transport Layer)
+Works on:
+   ⏺️ IP
+   ⏺️ Port
+   ⏺️ TCP/UDP
+   ⏺️ Example
+   ⏺️ AWS NLB
+   ⏺️ HAProxy (TCP mode)
+Characteristics
+    ✔️ Very fast
+    ✔️ Low latency
+    ❌ No understanding of HTTP
+
+🟩 L7 Load Balancer (Application Layer)
+Works on:
+   ⏺️ URL
+   ⏺️ Headers
+   ⏺️ Cookies
+   ⏺️ HTTP method
+Example
+   ⏺️ Nginx
+   ⏺️ AWS ALB
+   ⏺️ Envoy
+Characteristics
+    ✔️ Smart routing
+    ✔️ SSL termination
+    ❌ Slightly slower
+
+🧠 Interview Line
+   ➡️ “L4 is faster, L7 is smarter.”
+
+6️⃣ Load Balancing Algorithms --
+🔁 Round Robin
+    ⏺️ Requests distributed sequentially
+    ✔  Simple
+    ❌ Ignores server load
+⚖️ Least Connections
+   ⏺️ Server with fewest active connections
+    ✔ Better for uneven load
+📊 Weighted Round Robin
+   ⏺️ Powerful servers get more traffic
+🧠 Hash-Based
+   ⏺️ Same user → same server
+    ✔ Useful for sessions
+
+7️⃣ Reverse Proxy vs Load Balancer ---
+    | Reverse Proxy           | Load Balancer       |
+    | ----------------------- | ------------------- |
+    | Sits in front of server | Distributes traffic |
+    | Can cache               | Focus on routing    |
+    | Nginx, Apache           | HAProxy, ALB        |
+📌 One tool can do both.
+
+8️⃣ Sticky Sessions (Session Affinity)---
+   ➡️ Same user always routed to same server
+Why Needed
+   ⏺️ In-memory session storage
+Problems
+    ❌ Breaks scaling
+    ❌ Bad for failover
+    📌 Better solution : Store session in Redis
+
+9️⃣ Rate Limiting (Protect System) ---
+🔹 What is Rate Limiting?
+   ➡️ Restrict number of requests per user/IP in a time window
+Example
+   ⏺️ 100 requests/minute/user
+
+Algorithms
+    🪣 Token Bucket
+        ⏺️ Tokens refill over time
+        ⏺️ Allows bursts
+    🪣 Leaky Bucket
+        ⏺️ Fixed outflow rate
+    📌 Used by:
+        ⏺️ APIs
+        ⏺️ Login systems
+        ⏺️ Payment services
+
+🔟 Caching for Load Reduction --
+Where Cache Helps
+    ⏺️ Reduce DB hits
+    ⏺️ Faster responses
+Types
+    ⏺️ Browser cache
+    ⏺️ CDN cache
+    ⏺️ Server cache (Redis)
+➡️ Client → Cache → Server → DB
+
+📌 Cache reduces load exponentially
+
