@@ -57,6 +57,19 @@ export async function POST(req: Request) {
   return Response.json({ created: body })
 }
 ```
+```ts
+export async function POST(req: Request) {
+  const body = await req.json();
+  const { name, email } = body;
+
+  const { rows } = await pool.query(
+    "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *",
+    [name, email]
+  );
+
+  return NextResponse.json(rows[0], { status: 201 });
+}
+```
 
 ### 🌍 Real‑World Use Cases
 
@@ -84,6 +97,22 @@ Replaces the **entire resource** with new data.
 export async function PUT(req: Request) {
   const body = await req.json()
   return Response.json({ updated: body })
+}
+```
+```ts
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  const id = Number(params.id);
+  const { name, email } = await req.json();
+
+  await pool.query(
+    "UPDATE users SET name = $1, email = $2 WHERE id = $3",
+    [name, email, id]
+  );
+
+  return NextResponse.json({ message: "User replaced" });
 }
 ```
 
@@ -114,6 +143,22 @@ export async function PATCH(req: Request) {
   return Response.json({ patched: body })
 }
 ```
+```ts
+export async function PATCH(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  const id = Number(params.id);
+  const { name } = await req.json();
+
+  await pool.query(
+    "UPDATE users SET name = $1 WHERE id = $2",
+    [name, id]
+  );
+
+  return NextResponse.json({ message: "User updated" });
+}
+```
 
 ### 🌍 Real‑World Use Cases
 
@@ -142,6 +187,18 @@ export async function DELETE() {
   return Response.json({ deleted: true })
 }
 ```
+```ts
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  const id = Number(params.id);
+
+  await pool.query("DELETE FROM users WHERE id = $1", [id]);
+
+  return NextResponse.json({ message: "User deleted" });
+}
+```
 
 ### 🌍 Real‑World Use Cases
 
@@ -168,6 +225,23 @@ Same as GET **but returns no response body**.
 ```ts
 export async function HEAD() {
   return new Response(null, { status: 200 })
+}
+```
+```ts
+export async function HEAD(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  const id = Number(params.id);
+
+  const { rowCount } = await pool.query(
+    "SELECT 1 FROM users WHERE id = $1",
+    [id]
+  );
+
+  return new Response(null, {
+    status: rowCount ? 200 : 404,
+  });
 }
 ```
 
@@ -201,6 +275,16 @@ export async function OPTIONS() {
       Allow: "GET, POST, PATCH, DELETE",
     },
   })
+}
+```
+```ts
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      Allow: "GET,POST,PUT,PATCH,DELETE,HEAD,OPTIONS",
+    },
+  });
 }
 ```
 
