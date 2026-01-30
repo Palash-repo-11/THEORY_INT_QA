@@ -226,3 +226,270 @@ export default function BlogPage({ params }: { params: { slug?: string[] } }) {
 ---
 
 **End of document**
+
+
+
+
+# 🧭 How Next.js Routing Works Internally (App Router)
+
+This document explains **what happens internally in Next.js when a user requests a URL**, focusing on **Next.js 13+ App Router**. It covers routing, rendering, data fetching, streaming, and client-side navigation — step by step.
+
+---
+
+## 🧠 High-Level Flow
+
+When a user visits a URL like:
+
+```
+https://example.com/blog/42?tab=comments
+```
+
+Next.js performs the following major steps:
+
+1. Receives the HTTP request
+2. Matches the request path to a filesystem route
+3. Executes middleware (if any)
+4. Resolves layouts and route segments
+5. Renders Server Components
+6. Streams HTML and RSC payload
+7. Hydrates Client Components
+
+---
+
+## 1️⃣ Request Hits the Next.js Server
+
+Depending on the deployment environment:
+
+| Environment | Request Handler            |
+| ----------- | -------------------------- |
+| Vercel      | Edge Function / Serverless |
+| Self-hosted | Node.js server             |
+| `next dev`  | Dev Node server            |
+
+Before routing, Next.js checks:
+
+* Middleware
+* Static asset cache
+* Route manifest
+
+---
+
+## 2️⃣ File-System Route Matching
+
+Next.js uses **file-based routing**. There is **no route configuration file**.
+
+### Example Directory Structure
+
+```
+app/
+ ├─ blog/
+ │   └─ [id]/
+ │       └─ page.tsx
+ └─ layout.tsx
+```
+
+### Request: `/blog/42`
+
+Internal steps:
+
+1. URL path split → `["blog", "42"]`
+2. Folder traversal starts from `app/`
+3. Matches:
+
+   * `blog` → static segment
+   * `[id]` → dynamic segment
+4. Params extracted:
+
+```ts
+params = { id: "42" }
+```
+
+> 📌 Dynamic routes are compiled into efficient matchers during build time.
+
+---
+
+## 3️⃣ Middleware Execution (Optional)
+
+If `middleware.ts` exists:
+
+```ts
+export function middleware(req: NextRequest) {
+  // auth, rewrite, redirect
+}
+```
+
+Middleware runs **before rendering** and can:
+
+* Redirect
+* Rewrite paths
+* Block requests
+
+Usually executed on the **Edge Runtime**.
+
+---
+
+## 4️⃣ Layout & Route Segment Resolution
+
+For `/blog/42`, Next.js resolves:
+
+```
+app/layout.tsx
+app/blog/layout.tsx (if exists)
+app/blog/[id]/page.tsx
+```
+
+Each folder is a **route segment**.
+
+### Segment Tree (Internal)
+
+```
+RootLayout
+ └─ BlogLayout
+     └─ BlogPage (id=42)
+```
+
+This tree is rendered as **React Server Components (RSC)**.
+
+---
+
+## 5️⃣ Server vs Client Components
+
+Next.js determines execution environment per component:
+
+| Component Type             | Runs On |
+| -------------------------- | ------- |
+| Server Component (default) | Server  |
+| `"use client"`             | Browser |
+
+Server Components:
+
+* Execute first
+* Fetch data securely
+
+Client Components:
+
+* Converted into placeholders
+* Hydrated later in the browser
+
+---
+
+## 6️⃣ Data Fetching & Caching
+
+Example:
+
+```ts
+await fetch("/api/post/42", { cache: "force-cache" })
+```
+
+Next.js:
+
+* Intercepts `fetch`
+* Applies caching rules
+* Supports ISR via `revalidate`
+
+Cache keys are derived from:
+
+* URL
+* Headers
+* Route params
+* Segment boundaries
+
+---
+
+## 7️⃣ Rendering Strategy Decision
+
+Next.js automatically decides how to render:
+
+| Condition         | Strategy     |
+| ----------------- | ------------ |
+| No dynamic data   | Static (SSG) |
+| `revalidate` used | ISR          |
+| Cookies / headers | Dynamic SSR  |
+| Edge compatible   | Edge SSR     |
+
+---
+
+## 8️⃣ Streaming HTML (App Router Superpower 🚀)
+
+Rendering is **streamed**, not blocking.
+
+Flow:
+
+1. HTML shell sent immediately
+2. Server Components streamed
+3. RSC payload (`__next_flight__`) sent
+4. Browser progressively renders UI
+
+This enables faster TTFB and perceived performance.
+
+---
+
+## 9️⃣ Client-Side Hydration
+
+In the browser:
+
+1. HTML is already visible
+2. JS bundles load
+3. Client Components hydrate
+4. Router becomes interactive
+
+Hooks become active:
+
+* `useRouter`
+* `useParams`
+* `useSearchParams`
+
+---
+
+## 🔁 Client-Side Navigation (`next/link`)
+
+```tsx
+<Link href="/blog/43" />
+```
+
+What happens:
+
+1. Full page reload is prevented
+2. Only RSC payload is requested
+3. Segment tree is updated
+4. Shared layouts are preserved
+5. Only changed components re-render
+
+> 💡 This is why layouts don’t remount on navigation.
+
+---
+
+## 🆚 Pages Router vs App Router
+
+| Pages Router         | App Router          |
+| -------------------- | ------------------- |
+| `pages/index.tsx`    | `app/page.tsx`      |
+| `getServerSideProps` | Server Components   |
+| Full page render     | Partial tree render |
+| No streaming         | Streaming           |
+| Client-first         | Server-first        |
+
+---
+
+## 🧠 Interview One-Liner
+
+> When a user requests a path, Next.js matches it against a build-time route manifest, resolves layouts and segments, executes Server Components on the server, streams HTML and RSC payloads, and hydrates only Client Components — enabling fast, cached, and partial navigation.
+
+---
+
+## ✅ Key Takeaways
+
+* Routing is filesystem-based
+* App Router is server-first
+* Layouts persist across navigation
+* Streaming improves performance
+* Only changed segments re-render
+
+---
+
+📌 **Recommended for:**
+
+* Interviews
+* System design discussions
+* Debugging routing & rendering issues
+* Understanding performance optimizations
